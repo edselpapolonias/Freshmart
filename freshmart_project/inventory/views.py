@@ -49,16 +49,18 @@ def item_delete(request, pk):
 def index(request):
     return render(request, 'index.html')
 
-def category_list(request):
-    categories = Category.objects.all()
-    return render(request, 'inventory/category_list.html', {'categories': categories})
-
-def category_add(request):
+def category_list_add(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('category_list')
+            return redirect('category_list_add') 
     else:
         form = CategoryForm()
-    return render(request, 'inventory/add_category.html', {'form': form})
+
+    categories = Category.objects.all()
+
+    return render(request, 'inventory/add_category.html', {
+        'form': form,
+        'categories': categories
+    })
