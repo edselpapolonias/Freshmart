@@ -64,3 +64,26 @@ def category_list_add(request):
         'form': form,
         'categories': categories
     })
+
+def category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list_add')
+    else:
+        form = CategoryForm(instance=category)
+    
+    categories = Category.objects.all()
+    return render(request, 'inventory/add_category.html', {
+        'form': form,
+        'categories': categories,
+        'edit_mode': True,
+        'category_id': pk
+    })
+
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    category.delete()
+    return redirect('category_list_add')

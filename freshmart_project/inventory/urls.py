@@ -10,4 +10,6 @@ urlpatterns = [
     path('item/delete/<int:pk>/', views.item_delete, name='item_delete'),
 
     path('categories/', views.category_list_add, name='category_list_add'),
+    path('categories/edit/<int:pk>/', views.category_edit, name='category_edit'),
+    path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
 ]
