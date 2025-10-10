@@ -42,7 +42,7 @@
                         <table class="table table-bordered table-striped mt-2">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Product Code</th>
                                     <th>Product Name</th>
                                     <th>Stock</th>
                                 </tr>
@@ -50,7 +50,7 @@
                             <tbody>
                                 {% for item in products %}
                                 <tr>
-                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.product_code }}</td>
                                     <td>{{ item.product_name }}</td>
                                     <td>{{ item.quantity_in_stock }}</td>
                                 </tr>
