@@ -12,7 +12,7 @@ class InventoryItem(models.Model):
     product_name = models.CharField(max_length=100)
     product_code = models.CharField(max_length=50)
     description = models.TextField(blank=True)
-    quantity_in_stock = models.IntegerField()
+    quantity_in_stock = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

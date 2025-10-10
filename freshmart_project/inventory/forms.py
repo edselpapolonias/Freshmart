@@ -5,7 +5,7 @@ from .models import Category
 class InventoryItemForm(forms.ModelForm):
     class Meta:
         model = InventoryItem
-        fields = ['product_code', 'product_name', 'description', 'quantity_in_stock', 'price', 'category']
+        fields = ['product_code', 'product_name', 'description', 'price', 'category']
         widgets = {
             'description': forms.TextInput(attrs={
                 'placeholder': 'Enter description',

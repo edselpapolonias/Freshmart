@@ -33,20 +33,14 @@
                                     {{ form.description|add_class:"form-control"|attr:"rows:3,placeholder:Enter description" }}
                                 </div>
 
-                                <!-- Quantity in Stock -->
-                                <div class="col-md-4">
-                                    <label for="id_quantity_in_stock" class="form-label">Quantity in Stock</label>
-                                    {{ form.quantity_in_stock|add_class:"form-control" }}
-                                </div>
-
                                 <!-- Price -->
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for="id_price" class="form-label">Price (₱)</label>
                                     {{ form.price|add_class:"form-control" }}
                                 </div>
 
                                 <!-- Category -->
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for="id_category" class="form-label">Category</label>
                                     {{ form.category|add_class:"form-control" }}
                                 </div>
@@ -60,7 +54,7 @@
                                         <button type="submit" class="btn btn-primary">Add Product</button>
                                     {% endif %}
                                 </div>
-                            </div>
+                            </div> <!-- end of row -->
                         </form>
                     </div>
                 </div>
