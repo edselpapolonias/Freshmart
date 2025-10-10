@@ -73,6 +73,7 @@
                                     <th>Stock</th>
                                     <th>Price</th>
                                     <th>Category</th>
+                                    <th>Date Added</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -85,6 +86,7 @@
                                     <td>{{ item.quantity_in_stock }}</td>
                                     <td>₱{{ item.price }}</td>
                                     <td>{{ item.category }}</td>
+                                    <td>{{ item.created_at }}</td>
                                     <td>
                                         <a href="{% url 'product_detail' item.id %}" class="btn btn-info btn-sm">View</a>
                                         <a href="{% url 'product_edit' item.id %}" class="btn btn-warning btn-sm">Edit</a>

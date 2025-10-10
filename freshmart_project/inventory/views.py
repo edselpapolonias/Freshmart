@@ -6,6 +6,7 @@ from .forms import CategoryForm
 from .models import Category
 from .forms import StockForm
 from django.db.models import Sum, F
+from django.contrib import messages
 
 
 def product_manage(request, pk=None):
@@ -126,22 +127,35 @@ def stock_management(request):
             if 'add_stock' in request.POST:
                 product.quantity_in_stock += quantity
                 action = 'ADD'
+                product.save()
+
+                # Save stock history
+                StockHistory.objects.create(
+                    product=product,
+                    old_quantity=old_quantity,
+                    input_quantity=quantity,
+                    new_quantity=product.quantity_in_stock,
+                    action=action
+                )
+                messages.success(request, f"{quantity} added to {product.product_name} stock.")
+
             elif 'deduct_stock' in request.POST:
-                product.quantity_in_stock -= quantity
-                if product.quantity_in_stock < 0:
-                    product.quantity_in_stock = 0
-                action = 'DEDUCT'
+                if quantity > product.quantity_in_stock:
+                    messages.error(request, f"Cannot deduct {quantity} from {product.product_name}. Only {product.quantity_in_stock} in stock.")
+                else:
+                    product.quantity_in_stock -= quantity
+                    action = 'DEDUCT'
+                    product.save()
 
-            product.save()
-
-            # Save stock history
-            StockHistory.objects.create(
-                product=product,
-                old_quantity=old_quantity,
-                input_quantity=quantity,
-                new_quantity=product.quantity_in_stock,
-                action=action
-            )
+                    # Save stock history
+                    StockHistory.objects.create(
+                        product=product,
+                        old_quantity=old_quantity,
+                        input_quantity=quantity,
+                        new_quantity=product.quantity_in_stock,
+                        action=action
+                    )
+                    messages.success(request, f"{quantity} deducted from {product.product_name} stock.")
 
             return redirect('stock_management')
     else:
