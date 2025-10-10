@@ -21,6 +21,12 @@ urlpatterns = [
 
     path('logout/', views.logout_view, name='logout'),
 
+    path('admin_verification/', views.admin_verification, name='admin_verification'),
+    path('admin_verification/approve/<int:profile_id>/', views.approve_admin, name='approve_admin'),
+    path('admin_verification/decline/<int:profile_id>/', views.decline_admin, name='decline_admin'),
+    path('waiting_verification/', views.waiting_verification, name='waiting_verification'),
+    path('declined_verification/', views.declined_verification, name='declined_verification'),
+
 ]
 
 

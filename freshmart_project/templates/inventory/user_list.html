@@ -21,6 +21,7 @@
                                     <th>Email</th>
                                     <th>Gender</th>
                                     <th>Role</th>
+                                    <th>Verified</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -39,9 +40,21 @@
                                     <td>{{ user.user.email }}</td>
                                     <td>{{ user.gender }}</td>
                                     <td>{{ user.role }}</td>
-                                </tr>
+                                    
+                                    <td class="text-center">
+                                        {% if user.role == 'Admin' %}
+                                            {% if user.is_verified %}
+                                                <span style="font-size: 1.2em; color: green;" title="Verified Admin">✔</span>
+                                            {% else %}
+                                                <span style="font-size: 1.2em; color: black;" title="Pending Verification">⚫</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    </tr>
                                 {% empty %}
-                                <tr><td colspan="7" class="text-center">No registered users found.</td></tr>
+                                <tr><td colspan="8" class="text-center">No registered users found.</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>

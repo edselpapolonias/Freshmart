@@ -18,9 +18,11 @@ from django.http import HttpResponseForbidden
 from functools import wraps
 from django.contrib.auth import logout
 from django.views.decorators.cache import never_cache
+from django.http import JsonResponse
 
 
 
+@login_required
 def product_manage(request, pk=None):
     if pk:  # For edit mode
         item = get_object_or_404(InventoryItem, pk=pk)
@@ -202,46 +204,169 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            # Create User
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                password=form.cleaned_data['password']
-            )
+            # Create user but do not activate if Admin
+            user = form.save(commit=False)
+            password = form.cleaned_data.get('password')
+            user.set_password(password)
+
+            role = form.cleaned_data.get('role')
+
+            if role == 'Admin':
+                user.is_active = False  # Admin cannot log in until approved
+            else:
+                user.is_active = True  # Regular users can log in immediately
+
+            user.save()
+
             # Create UserProfile
-            UserProfile.objects.create(
+            profile = UserProfile(
                 user=user,
-                gender=form.cleaned_data['gender'],
-                role=form.cleaned_data['role'],
-                picture=form.cleaned_data.get('picture')
+                gender=form.cleaned_data.get('gender'),
+                role=role,
+                picture=form.cleaned_data.get('picture'),
+                is_verified=(role != 'Admin')  # Only regular users are auto-verified
             )
-            messages.success(request, "Registration successful! Please log in.")
-            return redirect('login')
+            profile.save()
+
+            # Admin-specific message
+            if role == 'Admin':
+                messages.info(request, 'Your admin account is pending verification by the system administrator.')
+                return redirect('waiting_verification')
+            else:
+                messages.success(request, 'Account created successfully! You can now log in.')
+                return redirect('login')
     else:
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-def admin_required(view_func):
+def unverified_admin_or_superuser_required(view_func):
+    """Decorator to restrict access to Admins (verified or not) OR Superusers."""
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated and hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Admin':
+        # 1. Check if the user is a Superuser (bypasses all other checks)
+        if request.user.is_authenticated and request.user.is_superuser:
             return view_func(request, *args, **kwargs)
+
+        # 2. Check for ANY admin role (verified or unverified)
+        is_any_admin = (
+            request.user.is_authenticated and 
+            hasattr(request.user, 'userprofile') and 
+            request.user.userprofile.role == 'Admin'
+        )
+
+        if is_any_admin:
+            # If they are an unverified admin, they can access the verification page/actions
+            return view_func(request, *args, **kwargs)
+        
+        # 3. Deny access if not an admin or superuser
         return HttpResponseForbidden("You do not have permission to access this page.")
     return wrapper
 
-@admin_required
+def admin_required(view_func):
+    """Decorator to restrict access to VERIFIED Admin users OR Superusers."""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        # 1. Check if the user is a Superuser (bypasses all other checks)
+        if request.user.is_authenticated and request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+
+        # 2. Check for a regular verified admin
+        is_admin_verified = (
+            request.user.is_authenticated and 
+            hasattr(request.user, 'userprofile') and 
+            request.user.userprofile.role == 'Admin' and 
+            request.user.userprofile.is_verified
+        )
+
+        if is_admin_verified:
+            return view_func(request, *args, **kwargs)
+        
+        # 3. Handle pending/unauthorized admins: Redirect UNVERIFIED admins to the waiting page
+        if request.user.is_authenticated and hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Admin' and not request.user.userprofile.is_verified:
+             return redirect('waiting_verification') 
+        
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    return wrapper
+
+
 def user_list(request):
     users = UserProfile.objects.select_related('user').all()
     return render(request, 'inventory/user_list.html', {'users': users})
 
 def logout_view(request):
     logout(request)  # Ends the user session
-    messages.success(request, "You have been logged out successfully.")  # Optional: User feedback
     response = redirect('login')
     # Add no-cache headers to the redirect response
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
     return response
+
+
+@login_required
+@unverified_admin_or_superuser_required # Allows unverified admins and superusers
+def admin_verification(request):
+    # Logic is correct, as the decorator handles the access check.
+    if not hasattr(request.user, 'userprofile') and not request.user.is_superuser:
+        return HttpResponseForbidden("Invalid user profile setup.")
+
+    pending_admins = UserProfile.objects.filter(role='Admin', is_verified=False).exclude(user=request.user)
+    
+    return render(request, 'admin_verification.html', {'pending_admins': pending_admins})
+
+
+
+@login_required
+@unverified_admin_or_superuser_required # Allows unverified admins and superusers
+def approve_admin(request, profile_id):
+    profile = get_object_or_404(UserProfile, id=profile_id)
+    
+    if request.method == 'POST':
+        profile.is_verified = True
+        profile.user.is_active = True # IMPORTANT: Active lets them log in now
+        profile.user.save()
+        profile.save()
+        message = f"{profile.user.username}'s admin account has been approved."
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': message})
+        else:
+            messages.success(request, message)
+            return redirect('admin_verification')
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': False, 'message': 'Invalid request method or permission denied.'})
+    else:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+
+
+
+@login_required
+@unverified_admin_or_superuser_required # Allows unverified admins and superusers
+def decline_admin(request, profile_id):
+    profile = get_object_or_404(UserProfile, id=profile_id)
+    
+    if request.method == 'POST':
+        username = profile.user.username
+        profile.user.delete() # Deletes user and cascades to profile
+        
+        message = f"{username}'s admin account has been declined and removed."
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': message})
+        else:
+            messages.error(request, message)
+            return redirect('admin_verification')
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': False, 'message': 'Invalid request method or permission denied.'})
+    else:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+
+
+
+def waiting_verification(request):
+    return render(request, 'waiting_verification.html')
+
+def declined_verification(request):
+    return render(request, 'declined_verification.html')

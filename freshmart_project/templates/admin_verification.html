@@ -1,0 +1,132 @@
+{% include "partials/header.html" %}
+<body class="sb-nav-fixed">
+{% include "partials/navbar.html" %}
+
+<div id="layoutSidenav">
+    {% include "partials/sidebar.html" %}
+    <div id="layoutSidenav_content">
+        <main>
+            {% block content %}
+            <div class="container mt-5">
+                
+                {% csrf_token %} 
+
+                <h2>Admin Account Verification</h2>
+
+                <div id="messages">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <table class="table table-bordered mt-4">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Gender</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in pending_admins %}
+                        <tr id="row-{{ profile.id }}">
+                            <td>{{ profile.user.username }}</td>
+                            <td>{{ profile.user.email }}</td>
+                            <td>{{ profile.gender }}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm btn-approve" 
+                                                data-id="{{ profile.id }}" 
+                                                data-url="{% url 'approve_admin' profile.id %}">Accept</button>
+                                <button class="btn btn-danger btn-sm btn-decline" 
+                                                data-id="{{ profile.id }}" 
+                                                data-url="{% url 'decline_admin' profile.id %}">Decline</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="no-pending">
+                            <td colspan="4" class="text-center">No pending admin verifications.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
+        </main>
+        {% include "partials/footer.html" %}
+    </div>
+</div>
+
+{% include "partials/scripts.html" %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Get CSRF token
+    // This now works because the {% csrf_token %} tag is present in the HTML
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    function handleAction(btnClass, alertType) {
+        document.querySelectorAll(btnClass).forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const profileId = this.dataset.id;
+                const url = this.dataset.url;
+
+                this.disabled = true;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrftoken, // Token is successfully sent here
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success){
+                        const row = document.getElementById('row-' + profileId);
+                        if(row) row.remove();
+
+                        showMessage(alertType, data.message);
+
+                        // Check if the table is now empty and display the 'No pending' message
+                        const tbody = document.querySelector('table tbody');
+                        if(tbody.querySelectorAll('tr').length === 0){
+                            const row = document.createElement('tr');
+                            row.id = 'no-pending';
+                            row.innerHTML = `<td colspan="4" class="text-center">No pending admin verifications.</td>`;
+                            tbody.appendChild(row);
+                        }
+                    } else {
+                        showMessage('danger', data.message || 'An error occurred.');
+                        this.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    showMessage('danger', 'An error occurred. Please try again.');
+                    this.disabled = false;
+                });
+            });
+        });
+    }
+
+    handleAction('.btn-approve', 'success');
+    handleAction('.btn-decline', 'danger');
+
+    function showMessage(type, message){
+        const container = document.getElementById('messages');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show mt-2`;
+        alert.innerHTML = `${message} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+        container.appendChild(alert);
+    }
+});
+</script>
+</body>
+</html>
