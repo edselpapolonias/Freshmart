@@ -1,0 +1,59 @@
+{% include "partials/header.html" %}
+<body class="sb-nav-fixed">
+{% include "partials/navbar.html" %}
+
+<div id="layoutSidenav">
+    {% include "partials/sidebar.html" %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container mt-4">
+                <h2 class="mb-4">Registered Users</h2>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Profile Picture</th>
+                                    <th>Username</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Gender</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        {% if user.picture %}
+                                            <img src="{{ user.picture.url }}" alt="Profile" width="50" height="50" class="rounded-circle">
+                                        {% else %}
+                                            <span class="text-muted">No picture</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.user.username }}</td>
+                                    <td>{{ user.user.first_name }}</td>
+                                    <td>{{ user.user.last_name }}</td>
+                                    <td>{{ user.user.email }}</td>
+                                    <td>{{ user.gender }}</td>
+                                    <td>{{ user.role }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="7" class="text-center">No registered users found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        {% include "partials/footer.html" %}
+    </div>
+</div>
+
+{% include "partials/scripts.html" %}
+</body>
+</html>

@@ -229,3 +229,7 @@ def admin_required(view_func):
         return HttpResponseForbidden("You do not have permission to access this page.")
     return wrapper
 
+@admin_required
+def user_list(request):
+    users = UserProfile.objects.select_related('user').all()
+    return render(request, 'inventory/user_list.html', {'users': users})
