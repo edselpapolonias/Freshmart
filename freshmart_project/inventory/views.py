@@ -15,6 +15,8 @@ from .forms import UserRegistrationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+from functools import wraps
+
 
 def product_manage(request, pk=None):
     if pk:  # For edit mode
@@ -220,10 +222,10 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 def admin_required(view_func):
+    @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.userprofile.role == 'Admin':
+        if request.user.is_authenticated and hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Admin':
             return view_func(request, *args, **kwargs)
-        else:
-            return HttpResponseForbidden("You do not have permission to access this page.")
+        return HttpResponseForbidden("You do not have permission to access this page.")
     return wrapper
 

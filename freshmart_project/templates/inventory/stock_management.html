@@ -15,9 +15,10 @@
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                        {% endfor %}
+                    {% endfor %}
                 {% endif %}
 
+                {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <form method="POST" class="row g-3">
@@ -42,6 +43,7 @@
                         </form>
                     </div>
                 </div>
+                {% endif %} <!-- End Admin Only Form -->
 
                 <hr>
 

@@ -10,6 +10,7 @@
             <div class="container mt-4">
                 <h2 class="mb-4">{% if edit_mode %}Edit Product{% else %}Add Product{% endif %}</h2>
 
+                {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <form method="POST">
@@ -54,10 +55,11 @@
                                         <button type="submit" class="btn btn-primary">Add Product</button>
                                     {% endif %}
                                 </div>
-                            </div> <!-- end of row -->
+                            </div>
                         </form>
                     </div>
                 </div>
+                {% endif %} <!-- End Admin Only Form -->
 
                 <hr>
 
@@ -74,7 +76,9 @@
                                     <th>Price</th>
                                     <th>Category</th>
                                     <th>Date Added</th>
+                                    {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
                                     <th>Actions</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -87,8 +91,8 @@
                                     <td>₱{{ item.price }}</td>
                                     <td>{{ item.category }}</td>
                                     <td>{{ item.created_at }}</td>
+                                    {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
                                     <td>
-                                        <a href="{% url 'product_detail' item.id %}" class="btn btn-info btn-sm">View</a>
                                         <a href="{% url 'product_edit' item.id %}" class="btn btn-warning btn-sm">Edit</a>
                                         <form method="POST" action="{% url 'product_edit' item.id %}" style="display:inline;">
                                             {% csrf_token %}
@@ -98,9 +102,12 @@
                                             </button>
                                         </form>
                                     </td>
+                                    {% endif %}
                                 </tr>
                                 {% empty %}
-                                <tr><td colspan="8" class="text-center">No products available.</td></tr>
+                                <tr>
+                                    <td colspan="{% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}8{% else %}7{% endif %}" class="text-center">No products available.</td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
