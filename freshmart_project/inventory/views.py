@@ -79,3 +79,9 @@ def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     category.delete()
     return redirect('category_list_add')
+
+def product_detail(request, pk):
+    product = get_object_or_404(InventoryItem, pk=pk)
+    return render(request, 'inventory/product_detail.html', {
+        'product': product
+    })

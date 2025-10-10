@@ -1,0 +1,53 @@
+{% include "partials/header.html" %}
+
+<body class="sb-nav-fixed">
+    {% include "partials/navbar.html" %}
+
+    <div id="layoutSidenav">
+        {% include "partials/sidebar.html" %}
+
+        <div id="layoutSidenav_content">
+            <main class="container mt-4">
+                <h2 class="mb-4">Product Details</h2>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p><strong>Product Code:</strong> {{ product.product_code }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Product Name:</strong> {{ product.product_name }}</p>
+                            </div>
+                            <div class="col-12">
+                                <p><strong>Description:</strong></p>
+                                <div class="form-control" style="height:auto; min-height:60px;">
+                                    {{ product.description }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Quantity in Stock:</strong> {{ product.quantity_in_stock }}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Price (₱):</strong> {{ product.price }}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Category:</strong> {{ product.category }}</p>
+                            </div>
+
+                            <div class="col-12 text-end mt-3">
+                                <a href="{% url 'product_manage' %}" class="btn btn-secondary">Back to Products</a>
+                                <a href="{% url 'product_edit' product.id %}" class="btn btn-warning">Edit Product</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            {% include "partials/footer.html" %}
+        </div>
+    </div>
+
+    {% include "partials/scripts.html" %}
+</body>
+</html>
