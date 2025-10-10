@@ -3,12 +3,9 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),   
-    path('item/list', views.item_list, name='item_list'),
-    path('item/<int:pk>/', views.item_detail, name='item_detail'),
-    path('item/add/', views.item_add, name='item_add'),
-    path('item/edit/<int:pk>/', views.item_edit, name='item_edit'),
-    path('item/delete/<int:pk>/', views.item_delete, name='item_delete'),
-
+    path('products/', views.product_manage, name='product_manage'),
+    path('products/edit/<int:pk>/', views.product_manage, name='product_edit'),
+    
     path('categories/', views.category_list_add, name='category_list_add'),
     path('categories/edit/<int:pk>/', views.category_edit, name='category_edit'),
     path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
