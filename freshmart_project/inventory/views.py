@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import InventoryItem
+from .models import InventoryItem, StockHistory
 from .forms import InventoryItemForm
 from django.shortcuts import render
 from .forms import CategoryForm 
@@ -112,3 +112,46 @@ def stock_management(request):
         'form': form,
         'products': products
     })
+
+def stock_management(request):
+    if request.method == 'POST':
+        form = StockForm(request.POST)
+        if form.is_valid():
+            product = form.cleaned_data['product']
+            quantity = form.cleaned_data['quantity']
+
+            old_quantity = product.quantity_in_stock
+
+            if 'add_stock' in request.POST:
+                product.quantity_in_stock += quantity
+                action = 'ADD'
+            elif 'deduct_stock' in request.POST:
+                product.quantity_in_stock -= quantity
+                if product.quantity_in_stock < 0:
+                    product.quantity_in_stock = 0
+                action = 'DEDUCT'
+
+            product.save()
+
+            # Save stock history
+            StockHistory.objects.create(
+                product=product,
+                old_quantity=old_quantity,
+                input_quantity=quantity,
+                new_quantity=product.quantity_in_stock,
+                action=action
+            )
+
+            return redirect('stock_management')
+    else:
+        form = StockForm()
+
+    products = InventoryItem.objects.all()
+    return render(request, 'inventory/stock_management.html', {
+        'form': form,
+        'products': products
+    })
+
+def stock_history(request):
+    history = StockHistory.objects.select_related('product').order_by('-date')
+    return render(request, 'inventory/stock_history.html', {'history': history})

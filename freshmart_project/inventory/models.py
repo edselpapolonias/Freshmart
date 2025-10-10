@@ -20,3 +20,20 @@ class InventoryItem(models.Model):
 
     def __str__(self):
         return self.product_name
+
+class StockHistory(models.Model):
+    ACTION_CHOICES = (
+        ('ADD', 'Added'),
+        ('DEDUCT', 'Deducted'),
+    )
+
+    product = models.ForeignKey('InventoryItem', on_delete=models.CASCADE)
+    old_quantity = models.IntegerField()
+    input_quantity = models.IntegerField()
+    new_quantity = models.IntegerField()
+    action = models.CharField(max_length=6, choices=ACTION_CHOICES)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product.product_name} - {self.action} {self.input_quantity}"
+    

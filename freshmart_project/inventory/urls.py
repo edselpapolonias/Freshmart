@@ -12,5 +12,6 @@ urlpatterns = [
     path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
 
     path('stock/', views.stock_management, name='stock_management'),
+    path('stock-history/', views.stock_history, name='stock_history'),
 
 ]
