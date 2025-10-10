@@ -7,6 +7,9 @@ from .models import Category
 from .forms import StockForm
 from django.db.models import Sum, F
 from django.contrib import messages
+from django.db.models.functions import Lower
+from django.shortcuts import render
+from django.db.models.functions import TruncDate
 
 
 def product_manage(request, pk=None):
@@ -172,24 +175,17 @@ def stock_history(request):
     return render(request, 'inventory/stock_history.html', {'history': history})
 
 def dashboard(request):
-    # Total number of products
     total_products = InventoryItem.objects.count()
-
-    # Total value of inventory (quantity * price)
-    total_value = InventoryItem.objects.aggregate(
-        total=Sum(F('quantity_in_stock') * F('price'))
-    )['total'] or 0  # If empty, default to 0
-
-    # Low stock: 1 to 20
+    total_value = InventoryItem.objects.aggregate(total=Sum(F('quantity_in_stock') * F('price')))['total'] or 0
     low_stock = InventoryItem.objects.filter(quantity_in_stock__gte=1, quantity_in_stock__lte=20).count()
-
-    # Out of stock: 0
     out_of_stock = InventoryItem.objects.filter(quantity_in_stock=0).count()
+    products_list = InventoryItem.objects.all().order_by('quantity_in_stock')
 
     context = {
         'total_products': total_products,
         'total_value': total_value,
         'low_stock': low_stock,
-        'out_of_stock': out_of_stock
+        'out_of_stock': out_of_stock,
+        'products_list': products_list,
     }
     return render(request, 'index.html', context)
