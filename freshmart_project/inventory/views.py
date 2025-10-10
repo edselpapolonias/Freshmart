@@ -16,6 +16,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from functools import wraps
+from django.contrib.auth import logout
+from django.views.decorators.cache import never_cache
+
 
 
 def product_manage(request, pk=None):
@@ -49,7 +52,6 @@ def product_manage(request, pk=None):
         'items': items,
         'edit_mode': edit_mode,
     })
-
 
 def index(request):
     return render(request, 'index.html')
@@ -233,3 +235,13 @@ def admin_required(view_func):
 def user_list(request):
     users = UserProfile.objects.select_related('user').all()
     return render(request, 'inventory/user_list.html', {'users': users})
+
+def logout_view(request):
+    logout(request)  # Ends the user session
+    messages.success(request, "You have been logged out successfully.")  # Optional: User feedback
+    response = redirect('login')
+    # Add no-cache headers to the redirect response
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response

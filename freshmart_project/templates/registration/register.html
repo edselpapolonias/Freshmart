@@ -3,170 +3,234 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-    body {
-        background: linear-gradient(135deg, #15ce4d 0%, #e6f7ec 100%);
-        font-family: 'Poppins', sans-serif;
-        color: #374151;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
+  /* (Keep all your existing custom styles here) */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+  body {
+    background: linear-gradient(135deg, #2ecc71 0%, #ecf9f1 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #2c3e50;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 40px 60px;
+  }
+  .register-container {
+    max-width: 800px;
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(46, 204, 113, 0.15);
+    padding: 50px 50px 60px 50px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .register-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 22px 50px rgba(46, 204, 113, 0.25);
+  }
+  .register-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .register-header h3 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: #27ae60;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .register-header p {
+    color: #7f8c8d;
+    font-size: 1.2rem;
+    font-weight:500;
+    margin: 0;
+  }
+  label {
+    font-weight: 600;
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .form-control,
+  .form-select {
+    border-radius: 12px;
+    border: 1.8px solid #d1d8dc;
+    padding: 16px 20px;
+    font-size: 1.15rem;
+    color: #2c3e50;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fafafa;
+  }
+  .form-control::placeholder {
+    color: #a3a9ad;
+  }
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #27ae60;
+    box-shadow: 0 0 12px rgba(39,174,96,0.6);
+    outline: none;
+    background-color: #fff;
+  }
+  /* Use consistent vertical spacing for each input block */
+  .input-block {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 28px;
+  }
+  .btn-register {
+    background-color: #27ae60;
+    border: none;
+    color: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    width: 100%;
+    font-weight:700;
+    font-size:1.25rem;
+    letter-spacing:0.05em;
+    cursor:pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 8px 20px rgba(39,174,96,0.3);
+    user-select:none;
+    margin-top:10px;
+  }
+  .btn-register:hover {
+    background-color:#229954;
+    box-shadow:0 10px 26px rgba(34,153,84,0.5);
+    transform: translateY(-2px);
+  }
+  .text-link {
+    color:#27ae60;
+    font-weight:600;
+    text-decoration:none;
+    transition:color 0.2s ease, text-decoration 0.2s ease;
+  }
+  .text-link:hover {
+    color:#1e8449;
+    text-decoration:underline;
+  }
+  .text-center p {
+    font-weight:500;
+    color:#4b4b4b;
+    font-size:1rem;
+    margin-top:30px;
+  }
+  @media (max-width: 991.98px) {
     .register-container {
-        width: 100%;
-        max-width: 600px;
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 8px 25px rgba(22, 163, 74, 0.1);
-        padding: 50px 40px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      max-width:700px;
+      padding:40px 35px 50px 35px;
     }
-
-    .register-container:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(22, 163, 74, 0.15);
+  }
+  @media (max-width: 575.98px) {
+    body {
+      padding:20px 15px;
     }
-
-    .register-header {
-        text-align: center;
-        margin-bottom: 30px;
+    .register-container {
+      max-width:100%;
+      padding:30px 25px 40px 25px;
+      border-radius:12px;
     }
-
     .register-header h3 {
-        color: #15803d;
-        font-weight: 700;
+      font-size:1.8rem;
     }
-
     .register-header p {
-        color: #6b7280;
-        font-size: 15px;
+      font-size:1rem;
     }
-
-    label {
-        font-weight: 500;
-        color: #374151;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 10px;
-        border: 1px solid #d1d5db;
-        padding: 10px 14px;
-        transition: all 0.2s ease;
-        font-size: 15px;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #16a34a;
-        box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.25);
-    }
-
     .btn-register {
-        background-color: #16a34a;
-        border: none;
-        color: white;
-        padding: 12px;
-        border-radius: 10px;
-        width: 100%;
-        font-weight: 600;
-        font-size: 16px;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+      font-size:1.1rem;
+      padding:14px;
     }
-
-    .btn-register:hover {
-        background-color: #15803d;
-        transform: scale(1.02);
-    }
-
-    .text-link {
-        color: #16a34a;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
-    }
-
-    .text-link:hover {
-        color: #0e7c3a;
-        text-decoration: underline;
-    }
-
-    .form-control::placeholder {
-        color: #9ca3af;
-    }
-
-    .mb-3 {
-        margin-bottom: 20px !important;
-    }
+  }
 </style>
 
-<div class="register-container">
-    <div class="register-header">
-        <h3>Registration</h3>
-        <p>Create your account to access the inventory management system</p>
+<div class="register-container shadow-sm">
+  <div class="register-header">
+    <h3>Registration</h3>
+    <p>Create your account to access the inventory management system</p>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="row gx-4 gy-4 mb-4">
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.first_name.label_tag }}
+          {{ form.first_name }}
+          {{ form.first_name.errors }}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.last_name.label_tag }}
+          {{ form.last_name }}
+          {{ form.last_name.errors }}
+        </div>
+      </div>
     </div>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                {{ form.first_name.label_tag }}
-                {{ form.first_name }}
-                {{ form.first_name.errors }}
-            </div>
-            <div class="col-md-6">
-                {{ form.last_name.label_tag }}
-                {{ form.last_name }}
-                {{ form.last_name.errors }}
-            </div>
+    <div class="row gx-4 gy-4 mb-4">
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.email.label_tag }}
+          {{ form.email }}
+          {{ form.email.errors }}
         </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                {{ form.email.label_tag }}
-                {{ form.email }}
-                {{ form.email.errors }}
-            </div>
-            <div class="col-md-6">
-                {{ form.username.label_tag }}
-                {{ form.username }}
-                {{ form.username.errors }}
-            </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.username.label_tag }}
+          {{ form.username }}
+          {{ form.username.errors }}
         </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                {{ form.password.label_tag }}
-                {{ form.password }}
-                {{ form.password.errors }}
-            </div>
-            <div class="col-md-6">
-                {{ form.role.label_tag }}
-                {{ form.role }}
-                {{ form.role.errors }}
-            </div>
-        </div>
-
-        <div class="mb-3">
-            {{ form.gender.label_tag }}
-            {{ form.gender }}
-            {{ form.gender.errors }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.picture.label_tag }}
-            {{ form.picture }}
-            {{ form.picture.errors }}
-        </div>
-
-        <button type="submit" class="btn-register">Create Account</button>
-    </form>
-
-    <div class="text-center mt-3">
-        <p>Already have an account? <a href="{% url 'login' %}" class="text-link">Sign in here</a></p>
+      </div>
     </div>
+
+    <div class="row gx-4 gy-4 mb-4">
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.password.label_tag }}
+          {{ form.password }}
+          {{ form.password.errors }}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.role.label_tag }}
+          {{ form.role }}
+          {{ form.role.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row gx-4 gy-4 mb-4">
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.gender.label_tag }}
+          {{ form.gender }}
+          {{ form.gender.errors }}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="input-block">
+          {{ form.picture.label_tag }}
+          {{ form.picture }}
+          {{ form.picture.errors }}
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-register">Create Account</button>
+  </form>
+
+  <div class="text-center">
+    <p>Already have an account? <a href="{% url 'login' %}" class="text-link">Sign in here</a></p>
+  </div>
 </div>
 {% endblock %}

@@ -19,9 +19,10 @@ from django.urls import path, include
 from inventory import views as inventory_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
 
 urlpatterns = [
-    path('', include('inventory.urls')),
+    path('', lambda request: redirect('login')),  
     path('admin/', admin.site.urls),
     path('inventory/', include('inventory.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
