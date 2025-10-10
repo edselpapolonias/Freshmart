@@ -5,6 +5,7 @@ from django.shortcuts import render
 from .forms import CategoryForm 
 from .models import Category
 from .forms import StockForm
+from django.db.models import Sum, F
 
 
 def product_manage(request, pk=None):
@@ -155,3 +156,26 @@ def stock_management(request):
 def stock_history(request):
     history = StockHistory.objects.select_related('product').order_by('-date')
     return render(request, 'inventory/stock_history.html', {'history': history})
+
+def dashboard(request):
+    # Total number of products
+    total_products = InventoryItem.objects.count()
+
+    # Total value of inventory (quantity * price)
+    total_value = InventoryItem.objects.aggregate(
+        total=Sum(F('quantity_in_stock') * F('price'))
+    )['total'] or 0  # If empty, default to 0
+
+    # Low stock: 1 to 20
+    low_stock = InventoryItem.objects.filter(quantity_in_stock__gte=1, quantity_in_stock__lte=20).count()
+
+    # Out of stock: 0
+    out_of_stock = InventoryItem.objects.filter(quantity_in_stock=0).count()
+
+    context = {
+        'total_products': total_products,
+        'total_value': total_value,
+        'low_stock': low_stock,
+        'out_of_stock': out_of_stock
+    }
+    return render(request, 'index.html', context)
