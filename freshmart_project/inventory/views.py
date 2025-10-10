@@ -10,7 +10,11 @@ from django.contrib import messages
 from django.db.models.functions import Lower
 from django.shortcuts import render
 from django.db.models.functions import TruncDate
-
+from .models import UserProfile
+from .forms import UserRegistrationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
 def product_manage(request, pk=None):
     if pk:  # For edit mode
@@ -189,3 +193,37 @@ def dashboard(request):
         'products_list': products_list,
     }
     return render(request, 'index.html', context)
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Create User
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                password=form.cleaned_data['password']
+            )
+            # Create UserProfile
+            UserProfile.objects.create(
+                user=user,
+                gender=form.cleaned_data['gender'],
+                role=form.cleaned_data['role'],
+                picture=form.cleaned_data.get('picture')
+            )
+            messages.success(request, "Registration successful! Please log in.")
+            return redirect('login')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+def admin_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_authenticated and request.user.userprofile.role == 'Admin':
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+    return wrapper
+

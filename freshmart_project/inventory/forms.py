@@ -1,6 +1,8 @@
 from django import forms
 from .models import InventoryItem
 from .models import Category
+from django.contrib.auth.models import User
+from .models import UserProfile
 
 class InventoryItemForm(forms.ModelForm):
     class Meta:
@@ -32,3 +34,17 @@ class StockForm(forms.Form):
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter quantity'}),
         label="Quantity"
     )
+
+class UserRegistrationForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    username = forms.CharField(max_length=30)
+    password = forms.CharField(widget=forms.PasswordInput)
+    gender = forms.ChoiceField(choices=UserProfile.GENDER_CHOICES)
+    role = forms.ChoiceField(choices=UserProfile.ROLE_CHOICES)
+    picture = forms.ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username', 'password']
