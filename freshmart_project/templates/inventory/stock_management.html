@@ -1,0 +1,74 @@
+{% include "partials/header.html" %}
+<body class="sb-nav-fixed">
+{% include "partials/navbar.html" %}
+
+<div id="layoutSidenav">
+    {% include "partials/sidebar.html" %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container mt-4">
+                <h2 class="mb-4">Stock Management</h2>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <form method="POST" class="row g-3">
+                            {% csrf_token %}
+                            <!-- Product Select -->
+                            <div class="col-md-6">
+                                {{ form.product.label_tag }}
+                                {{ form.product }}
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="col-md-6">
+                                {{ form.quantity.label_tag }}
+                                {{ form.quantity }}
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="col-12 text-end mt-3">
+                                <button type="submit" name="add_stock" class="btn btn-success">Add Stock</button>
+                                <button type="submit" name="deduct_stock" class="btn btn-danger">Deduct Stock</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h3 class="mt-4">Product Stock List</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product Name</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in products %}
+                                <tr>
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.product_name }}</td>
+                                    <td>{{ item.quantity_in_stock }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center">No products available.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        {% include "partials/footer.html" %}
+    </div>
+</div>
+
+{% include "partials/scripts.html" %}
+</body>
+</html>

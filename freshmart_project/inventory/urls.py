@@ -10,4 +10,7 @@ urlpatterns = [
     path('categories/', views.category_list_add, name='category_list_add'),
     path('categories/edit/<int:pk>/', views.category_edit, name='category_edit'),
     path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
+
+    path('stock/', views.stock_management, name='stock_management'),
+
 ]

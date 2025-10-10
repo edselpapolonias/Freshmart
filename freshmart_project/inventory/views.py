@@ -4,6 +4,8 @@ from .forms import InventoryItemForm
 from django.shortcuts import render
 from .forms import CategoryForm 
 from .models import Category
+from .forms import StockForm
+
 
 def product_manage(request, pk=None):
     if pk:  # For edit mode
@@ -84,4 +86,29 @@ def product_detail(request, pk):
     product = get_object_or_404(InventoryItem, pk=pk)
     return render(request, 'inventory/product_detail.html', {
         'product': product
+    })
+
+def stock_management(request):
+    if request.method == 'POST':
+        form = StockForm(request.POST)
+        if form.is_valid():
+            product = form.cleaned_data['product']
+            quantity = form.cleaned_data['quantity']
+
+            if 'add_stock' in request.POST:
+                product.quantity_in_stock += quantity
+            elif 'deduct_stock' in request.POST:
+                product.quantity_in_stock -= quantity
+                if product.quantity_in_stock < 0:
+                    product.quantity_in_stock = 0  # Prevent negative stock
+
+            product.save()
+            return redirect('stock_management')
+    else:
+        form = StockForm()
+
+    products = InventoryItem.objects.all()
+    return render(request, 'inventory/stock_management.html', {
+        'form': form,
+        'products': products
     })

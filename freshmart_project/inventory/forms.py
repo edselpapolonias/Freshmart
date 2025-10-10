@@ -20,3 +20,15 @@ class CategoryForm(forms.ModelForm):
             'category_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter category name'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter description'}),
         }
+
+class StockForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=InventoryItem.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Select Product"
+    )
+    quantity = forms.IntegerField(
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter quantity'}),
+        label="Quantity"
+    )
