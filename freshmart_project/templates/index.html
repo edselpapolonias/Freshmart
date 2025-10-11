@@ -1,11 +1,8 @@
-{% include "partials/header.html" %} <!-- HEADER -->
-
+{% include "partials/header.html" %}
 <body class="sb-nav-fixed">
-    {% include "partials/navbar.html" %} <!-- NAVBAR -->
-
+    {% include "partials/navbar.html" %}
     <div id="layoutSidenav">
-        {% include "partials/sidebar.html" %} <!-- SIDEBAR -->
-
+        {% include "partials/sidebar.html" %}
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -14,9 +11,7 @@
                         <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
 
-                    <!-- Dashboard Cards -->
                     <div class="row g-4 mb-4">
-                        <!-- Total Products -->
                         <div class="col-xl-3 col-md-6">
                             <div class="card shadow-sm rounded-4 text-white bg-primary h-100">
                                 <div class="card-body d-flex flex-column justify-content-center align-items-center py-4">
@@ -26,7 +21,6 @@
                             </div>
                         </div>
 
-                        <!-- Total Value of Inventory -->
                         <div class="col-xl-3 col-md-6">
                             <div class="card shadow-sm rounded-4 text-white bg-success h-100">
                                 <div class="card-body d-flex flex-column justify-content-center align-items-center py-4">
@@ -36,7 +30,6 @@
                             </div>
                         </div>
 
-                        <!-- Low Stock -->
                         <div class="col-xl-3 col-md-6">
                             <div class="card shadow-sm rounded-4 text-white bg-warning h-100">
                                 <div class="card-body d-flex flex-column justify-content-center align-items-center py-4">
@@ -46,7 +39,6 @@
                             </div>
                         </div>
 
-                        <!-- Out of Stock -->
                         <div class="col-xl-3 col-md-6">
                             <div class="card shadow-sm rounded-4 text-white bg-danger h-100">
                                 <div class="card-body d-flex flex-column justify-content-center align-items-center py-4">
@@ -57,7 +49,6 @@
                         </div>
                     </div>
 
-                    <!-- Product Table Section -->
                     <div class="card shadow-sm rounded-4 mb-4">
                         <div class="card-header bg-success text-white d-flex align-items-center">
                             <i class="fas fa-table me-2"></i>
@@ -91,13 +82,196 @@
                         </div>
                     </div>
 
+                    <div class="card shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-success text-white d-flex align-items-center">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            <span class="fw-semibold fs-5">Stock Quantity by Category Distribution</span>
+                        </div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-4">
+                            <div style="max-width: 500px; max-height: 500px;">
+                                <canvas id="categoryPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-success text-white d-flex align-items-center">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            <span class="fw-semibold fs-5">Total Inventory Value by Category</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <canvas id="categoryBarChart" style="max-height: 400px;"></canvas>
+                        </div>
+                    </div>
                 </div>
             </main>
 
-            {% include "partials/footer.html" %} <!-- FOOTER -->
+            {% include "partials/footer.html" %}
         </div>
     </div>
 
-    {% include "partials/scripts.html" %} <!-- SCRIPTS -->
+    {% include "partials/scripts.html" %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pie Chart Data Fetch & Render
+        fetch('{% url "category_quantity_data" %}')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const ctx = document.getElementById('categoryPieChart');
+
+                if (data.labels.length === 0) {
+                    const container = ctx.parentElement.parentElement;
+                    container.innerHTML = '<p class="text-center text-muted fst-italic py-5">No products currently in stock to display on chart.</p>';
+                    return;
+                }
+
+                const chartColors = [
+                    '#1cc88a', '#4e73df', '#36b9cc', '#f6c23e', '#e74a3b',
+                    '#858796', '#6610f2', '#fd7e14', '#20c997', '#6f42c1'
+                ];
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.quantities,
+                            backgroundColor: chartColors.slice(0, data.labels.length),
+                            hoverOffset: 8,
+                            borderWidth: 1,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        let value = context.parsed;
+                                        return label + ': ' + value.toLocaleString() + ' units';
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 15
+                                }
+                            }
+                        },
+                        cutout: '80%',
+                    },
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching chart data:', error);
+                const container = document.getElementById('categoryPieChart').parentElement;
+                container.innerHTML = '<p class="text-center text-danger fst-italic py-5">Error loading chart data. Check server logs or if "category_quantity_data" URL is defined.</p>';
+            });
+    });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Bar Chart Data Fetch & Render
+        fetch('{% url "category_value_data" %}')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const ctx = document.getElementById('categoryBarChart');
+
+                if (data.labels.length === 0) {
+                    const container = ctx.parentElement;
+                    container.innerHTML = '<p class="text-center text-muted fst-italic py-5">No products with stock and price found to calculate value.</p>';
+                    return;
+                }
+
+                const chartColors = [
+                    '#1cc88a', '#4e73df', '#36b9cc', '#f6c23e', '#e74a3b',
+                    '#858796', '#6610f2', '#fd7e14', '#20c997', '#6f42c1'
+                ];
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Total Value',
+                            data: data.values,
+                            backgroundColor: chartColors.slice(0, data.labels.length),
+                            borderColor: chartColors.slice(0, data.labels.length),
+                            borderWidth: 1,
+                            borderRadius: 5,
+                            maxBarThickness: 40
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Total Value (₱)',
+                                    color: '#198754',
+                                    font: { weight: 'bold' }
+                                },
+                                ticks: {
+                                    color: '#198754',
+                                    callback: function(value) {
+                                        return '₱' + value.toLocaleString();
+                                    }
+                                },
+                                grid: {
+                                    color: '#d1e7dd'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#198754',
+                                    font: { weight: 'bold' }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#198754',
+                                titleColor: '#e6f4ea',
+                                bodyColor: '#e6f4ea',
+                                callbacks: {
+                                    label: function(context) {
+                                        let value = context.parsed.x;
+                                        return '₱' + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching category value data:', error);
+                const container = document.getElementById('categoryBarChart').parentElement;
+                container.innerHTML = '<p class="text-center text-danger fst-italic py-5">Error loading category value chart data.</p>';
+            });
+    });
+    </script>
 </body>
 </html>

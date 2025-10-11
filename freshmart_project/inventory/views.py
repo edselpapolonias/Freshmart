@@ -5,7 +5,7 @@ from django.shortcuts import render
 from .forms import CategoryForm 
 from .models import Category
 from .forms import StockForm
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Count
 from django.contrib import messages
 from django.db.models.functions import Lower
 from django.shortcuts import render
@@ -21,7 +21,56 @@ from django.views.decorators.cache import never_cache
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
+from django.db import models
 
+def unverified_admin_or_superuser_required(view_func):
+    """Decorator to restrict access to Admins (verified or not) OR Superusers."""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        # 1. Check if the user is a Superuser (bypasses all other checks)
+        if request.user.is_authenticated and request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+
+        # 2. Check for ANY admin role (verified or unverified)
+        is_any_admin = (
+            request.user.is_authenticated and 
+            hasattr(request.user, 'userprofile') and 
+            request.user.userprofile.role == 'Admin'
+        )
+
+        if is_any_admin:
+            # If they are an unverified admin, they can access the verification page/actions
+            return view_func(request, *args, **kwargs)
+        
+        # 3. Deny access if not an admin or superuser
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    return wrapper
+
+def admin_required(view_func):
+    """Decorator to restrict access to VERIFIED Admin users OR Superusers."""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        # 1. Check if the user is a Superuser (bypasses all other checks)
+        if request.user.is_authenticated and request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+
+        # 2. Check for a regular verified admin
+        is_admin_verified = (
+            request.user.is_authenticated and 
+            hasattr(request.user, 'userprofile') and 
+            request.user.userprofile.role == 'Admin' and 
+            request.user.userprofile.is_verified
+        )
+
+        if is_admin_verified:
+            return view_func(request, *args, **kwargs)
+        
+        # 3. Handle pending/unauthorized admins: Redirect UNVERIFIED admins to the waiting page
+        if request.user.is_authenticated and hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Admin' and not request.user.userprofile.is_verified:
+             return redirect('waiting_verification') 
+        
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    return wrapper
 
 @login_required
 def product_manage(request, pk=None):
@@ -59,6 +108,7 @@ def product_manage(request, pk=None):
 def index(request):
     return render(request, 'index.html')
 
+@login_required
 def category_list_add(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -104,31 +154,7 @@ def product_detail(request, pk):
         'product': product
     })
 
-def stock_management(request):
-    if request.method == 'POST':
-        form = StockForm(request.POST)
-        if form.is_valid():
-            product = form.cleaned_data['product']
-            quantity = form.cleaned_data['quantity']
-
-            if 'add_stock' in request.POST:
-                product.quantity_in_stock += quantity
-            elif 'deduct_stock' in request.POST:
-                product.quantity_in_stock -= quantity
-                if product.quantity_in_stock < 0:
-                    product.quantity_in_stock = 0  # Prevent negative stock
-
-            product.save()
-            return redirect('stock_management')
-    else:
-        form = StockForm()
-
-    products = InventoryItem.objects.all()
-    return render(request, 'inventory/stock_management.html', {
-        'form': form,
-        'products': products
-    })
-
+@login_required
 def stock_management(request):
     if request.method == 'POST':
         form = StockForm(request.POST)
@@ -181,10 +207,12 @@ def stock_management(request):
         'products': products
     })
 
+@login_required
 def stock_history(request):
     history = StockHistory.objects.select_related('product').order_by('-date')
     return render(request, 'inventory/stock_history.html', {'history': history})
 
+@login_required
 def dashboard(request):
     total_products = InventoryItem.objects.count()
     total_value = InventoryItem.objects.aggregate(total=Sum(F('quantity_in_stock') * F('price')))['total'] or 0
@@ -238,55 +266,6 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-def unverified_admin_or_superuser_required(view_func):
-    """Decorator to restrict access to Admins (verified or not) OR Superusers."""
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        # 1. Check if the user is a Superuser (bypasses all other checks)
-        if request.user.is_authenticated and request.user.is_superuser:
-            return view_func(request, *args, **kwargs)
-
-        # 2. Check for ANY admin role (verified or unverified)
-        is_any_admin = (
-            request.user.is_authenticated and 
-            hasattr(request.user, 'userprofile') and 
-            request.user.userprofile.role == 'Admin'
-        )
-
-        if is_any_admin:
-            # If they are an unverified admin, they can access the verification page/actions
-            return view_func(request, *args, **kwargs)
-        
-        # 3. Deny access if not an admin or superuser
-        return HttpResponseForbidden("You do not have permission to access this page.")
-    return wrapper
-
-def admin_required(view_func):
-    """Decorator to restrict access to VERIFIED Admin users OR Superusers."""
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        # 1. Check if the user is a Superuser (bypasses all other checks)
-        if request.user.is_authenticated and request.user.is_superuser:
-            return view_func(request, *args, **kwargs)
-
-        # 2. Check for a regular verified admin
-        is_admin_verified = (
-            request.user.is_authenticated and 
-            hasattr(request.user, 'userprofile') and 
-            request.user.userprofile.role == 'Admin' and 
-            request.user.userprofile.is_verified
-        )
-
-        if is_admin_verified:
-            return view_func(request, *args, **kwargs)
-        
-        # 3. Handle pending/unauthorized admins: Redirect UNVERIFIED admins to the waiting page
-        if request.user.is_authenticated and hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Admin' and not request.user.userprofile.is_verified:
-             return redirect('waiting_verification') 
-        
-        return HttpResponseForbidden("You do not have permission to access this page.")
-    return wrapper
-
 
 def user_list(request):
     users = UserProfile.objects.select_related('user').all()
@@ -316,7 +295,6 @@ def admin_verification(request):
     ).exclude(user=request.user)
     
     return render(request, 'admin_verification.html', {'pending_admins': pending_admins})
-
 
 
 @login_required
@@ -386,3 +364,46 @@ def custom_login(request):
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
+
+def category_quantity_data(request):
+    """
+    Returns JSON data for a pie chart showing total quantity per category.
+    """
+    # Annotate the Category queryset with the sum of all related InventoryItem quantities
+    category_data = Category.objects.filter(
+        inventoryitem__quantity_in_stock__gt=0 # Only include categories with stock > 0
+    ).annotate(
+        total_quantity=Sum('inventoryitem__quantity_in_stock')
+    ).order_by('-total_quantity')
+
+    # Format the data for the JavaScript chart library
+    data = {
+        'labels': [item.category_name for item in category_data],
+        'quantities': [item.total_quantity for item in category_data],
+    }
+    
+    # Return the data as a JSON response
+    return JsonResponse(data)
+
+def category_value_data(request):
+    """
+    Returns JSON data for a bar chart showing the total monetary value per category.
+    """
+    # 1. Aggregate the total value (quantity_in_stock * price) for each category.
+    category_data = Category.objects.filter(
+        # Only include categories that have products in stock
+        inventoryitem__quantity_in_stock__gt=0 
+    ).annotate(
+        # Calculate the total value: SUM(quantity_in_stock * price)
+        total_value=Sum(F('inventoryitem__quantity_in_stock') * F('inventoryitem__price'))
+    ).order_by('-total_value') # Sort by highest value
+
+    # 2. Format the data for the JavaScript chart library
+    data = {
+        'labels': [item.category_name for item in category_data],
+        # Convert DecimalField values to float for JSON serialization
+        'values': [float(item.total_value or 0) for item in category_data], 
+    }
+    
+    # 3. Return the data as a JSON response
+    return JsonResponse(data)

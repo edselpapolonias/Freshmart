@@ -27,6 +27,9 @@ urlpatterns = [
     path('waiting_verification/', views.waiting_verification, name='waiting_verification'),
     path('declined_verification/', views.declined_verification, name='declined_verification'),
 
+    path('data/category-quantity/', views.category_quantity_data, name='category_quantity_data'),
+     path('data/category-value/', views.category_value_data, name='category_value_data'),
+
 ]
 
 
