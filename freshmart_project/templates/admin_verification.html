@@ -40,12 +40,25 @@
                             <td>{{ profile.user.email }}</td>
                             <td>{{ profile.gender }}</td>
                             <td>
+                                <button class="btn btn-info btn-sm btn-view" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#viewAdminModal"
+                                        data-username="{{ profile.user.username }}"
+                                        data-firstname="{{ profile.user.first_name }}"
+                                        data-lastname="{{ profile.user.last_name }}"
+                                        data-email="{{ profile.user.email }}"
+                                        data-gender="{{ profile.gender }}"
+                                        data-picture="{{ profile.picture.url|default:'' }}">
+                                    View
+                                </button>
+
                                 <button class="btn btn-success btn-sm btn-approve" 
-                                                data-id="{{ profile.id }}" 
-                                                data-url="{% url 'approve_admin' profile.id %}">Accept</button>
+                                        data-id="{{ profile.id }}" 
+                                        data-url="{% url 'approve_admin' profile.id %}">Accept</button>
+
                                 <button class="btn btn-danger btn-sm btn-decline" 
-                                                data-id="{{ profile.id }}" 
-                                                data-url="{% url 'decline_admin' profile.id %}">Decline</button>
+                                        data-id="{{ profile.id }}" 
+                                        data-url="{% url 'decline_admin' profile.id %}">Decline</button>
                             </td>
                         </tr>
                         {% empty %}
@@ -64,11 +77,36 @@
 
 {% include "partials/scripts.html" %}
 
+<!-- Admin Details Modal -->
+<div class="modal fade" id="viewAdminModal" tabindex="-1" aria-labelledby="viewAdminModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewAdminModalLabel">Admin Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <img id="admin-picture" src="" alt="Profile Picture" class="img-fluid rounded-circle" style="max-width: 150px;">
+        </div>
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Username:</strong> <span id="admin-username"></span></li>
+          <li class="list-group-item"><strong>First Name:</strong> <span id="admin-firstname"></span></li>
+          <li class="list-group-item"><strong>Last Name:</strong> <span id="admin-lastname"></span></li>
+          <li class="list-group-item"><strong>Email:</strong> <span id="admin-email"></span></li>
+          <li class="list-group-item"><strong>Gender:</strong> <span id="admin-gender"></span></li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Get CSRF token
-    // This now works because the {% csrf_token %} tag is present in the HTML
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     function handleAction(btnClass, alertType) {
@@ -84,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': csrftoken, // Token is successfully sent here
+                        'X-CSRFToken': csrftoken,
                     },
                 })
                 .then(response => response.json())
@@ -95,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         showMessage(alertType, data.message);
 
-                        // Check if the table is now empty and display the 'No pending' message
                         const tbody = document.querySelector('table tbody');
                         if(tbody.querySelectorAll('tr').length === 0){
                             const row = document.createElement('tr');
@@ -118,6 +155,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     handleAction('.btn-approve', 'success');
     handleAction('.btn-decline', 'danger');
+
+    // Handle View button for modal
+    document.querySelectorAll('.btn-view').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('admin-username').textContent = this.dataset.username;
+            document.getElementById('admin-firstname').textContent = this.dataset.firstname;
+            document.getElementById('admin-lastname').textContent = this.dataset.lastname;
+            document.getElementById('admin-email').textContent = this.dataset.email;
+            document.getElementById('admin-gender').textContent = this.dataset.gender;
+            const picture = this.dataset.picture || '/static/images/default-avatar.png';
+            document.getElementById('admin-picture').src = picture;
+        });
+    });
 
     function showMessage(type, message){
         const container = document.getElementById('messages');
