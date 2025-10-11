@@ -19,7 +19,8 @@ from functools import wraps
 from django.contrib.auth import logout
 from django.views.decorators.cache import never_cache
 from django.http import JsonResponse
-
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 
 
 @login_required
@@ -204,7 +205,6 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            # Create user but do not activate if Admin
             user = form.save(commit=False)
             password = form.cleaned_data.get('password')
             user.set_password(password)
@@ -212,23 +212,22 @@ def register(request):
             role = form.cleaned_data.get('role')
 
             if role == 'Admin':
-                user.is_active = False  # Admin cannot log in until approved
+                user.is_active = True  # Allow login but redirect will handle waiting/declined
             else:
-                user.is_active = True  # Regular users can log in immediately
+                user.is_active = True
 
             user.save()
 
-            # Create UserProfile
             profile = UserProfile(
                 user=user,
                 gender=form.cleaned_data.get('gender'),
                 role=role,
                 picture=form.cleaned_data.get('picture'),
-                is_verified=(role != 'Admin')  # Only regular users are auto-verified
+                is_verified=(role != 'Admin'),
+                is_declined=False
             )
             profile.save()
 
-            # Admin-specific message
             if role == 'Admin':
                 messages.info(request, 'Your admin account is pending verification by the system administrator.')
                 return redirect('waiting_verification')
@@ -310,7 +309,11 @@ def admin_verification(request):
     if not hasattr(request.user, 'userprofile') and not request.user.is_superuser:
         return HttpResponseForbidden("Invalid user profile setup.")
 
-    pending_admins = UserProfile.objects.filter(role='Admin', is_verified=False).exclude(user=request.user)
+    pending_admins = UserProfile.objects.filter(
+        role='Admin', 
+        is_verified=False, 
+        is_declined=False  # <-- exclude declined admins
+    ).exclude(user=request.user)
     
     return render(request, 'admin_verification.html', {'pending_admins': pending_admins})
 
@@ -323,7 +326,8 @@ def approve_admin(request, profile_id):
     
     if request.method == 'POST':
         profile.is_verified = True
-        profile.user.is_active = True # IMPORTANT: Active lets them log in now
+        profile.is_declined = False
+        profile.user.is_active = True
         profile.user.save()
         profile.save()
         message = f"{profile.user.username}'s admin account has been approved."
@@ -334,12 +338,6 @@ def approve_admin(request, profile_id):
             messages.success(request, message)
             return redirect('admin_verification')
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': False, 'message': 'Invalid request method or permission denied.'})
-    else:
-        return HttpResponseForbidden("You do not have permission to access this page.")
-
-
 
 @login_required
 @unverified_admin_or_superuser_required # Allows unverified admins and superusers
@@ -347,10 +345,11 @@ def decline_admin(request, profile_id):
     profile = get_object_or_404(UserProfile, id=profile_id)
     
     if request.method == 'POST':
-        username = profile.user.username
-        profile.user.delete() # Deletes user and cascades to profile
-        
-        message = f"{username}'s admin account has been declined and removed."
+        profile.is_verified = False
+        profile.is_declined = True
+        profile.user.is_active = True  # Keep active for login redirect
+        profile.save()
+        message = f"{profile.user.username}'s admin account has been declined."
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'message': message})
@@ -358,15 +357,32 @@ def decline_admin(request, profile_id):
             messages.error(request, message)
             return redirect('admin_verification')
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': False, 'message': 'Invalid request method or permission denied.'})
-    else:
-        return HttpResponseForbidden("You do not have permission to access this page.")
-
-
 
 def waiting_verification(request):
     return render(request, 'waiting_verification.html')
 
 def declined_verification(request):
     return render(request, 'declined_verification.html')
+
+def custom_login(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                profile = getattr(user, 'userprofile', None)
+                if profile and profile.role == 'Admin':
+                    if not profile.is_verified and not profile.is_declined:
+                        return redirect('waiting_verification')
+                    elif not profile.is_verified and profile.is_declined:
+                        return redirect('declined_verification')
+
+                login(request, user)
+                return redirect('index')  # dashboard/home
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})

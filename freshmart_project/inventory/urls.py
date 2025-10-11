@@ -16,7 +16,7 @@ urlpatterns = [
     path('stock-history/', views.stock_history, name='stock_history'),
 
     path('register/', views.register, name='registration'),
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', views.custom_login, name='login'),
     path('user-list/', views.user_list, name='user_list'),
 
     path('logout/', views.logout_view, name='logout'),

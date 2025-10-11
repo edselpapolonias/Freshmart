@@ -48,7 +48,7 @@
                                         data-lastname="{{ profile.user.last_name }}"
                                         data-email="{{ profile.user.email }}"
                                         data-gender="{{ profile.gender }}"
-                                        data-picture="{{ profile.picture.url|default:'' }}">
+                                        data-picture="{% if profile.picture %}{{ profile.picture.url }}{% else %}/static/images/default-avatar.png{% endif %}">
                                     View
                                 </button>
 

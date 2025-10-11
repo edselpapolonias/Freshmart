@@ -45,6 +45,8 @@
                                         {% if user.role == 'Admin' %}
                                             {% if user.is_verified %}
                                                 <span style="font-size: 1.2em; color: green;" title="Verified Admin">✔</span>
+                                            {% elif user.is_declined %}
+                                                <span style="font-size: 1.2em; color: red;" title="Declined Admin">❌</span>
                                             {% else %}
                                                 <span style="font-size: 1.2em; color: black;" title="Pending Verification">⚫</span>
                                             {% endif %}
