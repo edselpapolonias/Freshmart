@@ -103,7 +103,16 @@
                             <canvas id="categoryBarChart" style="max-height: 400px;"></canvas>
                         </div>
                     </div>
-                </div>
+
+                    <div class="card shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-success text-white d-flex align-items-center">
+                            <i class="fas fa-chart-line me-2"></i>
+                            <span class="fw-semibold fs-5">Product Price Comparison</span>
+                        </div>
+                        <div class="card-body p-4" style="padding-bottom: 3rem;">
+                            <canvas id="productPriceLineChart" style="max-height: 700px;"></canvas>
+                        </div>
+                    </div>
             </main>
 
             {% include "partials/footer.html" %}
@@ -182,7 +191,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Bar Chart Data Fetch & Render
+        // Bar Chart Data Fetch & Render - Total Inventory Value by Category
         fetch('{% url "category_value_data" %}')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -219,7 +228,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        indexAxis: 'y',
+                        indexAxis: 'y', // Makes it a horizontal bar chart
                         scales: {
                             x: {
                                 beginAtZero: true,
@@ -273,5 +282,111 @@
             });
     });
     </script>
-</body>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Line Chart Data Fetch & Render - Product Price Comparison
+        fetch('{% url "product_price_data" %}')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const ctx = document.getElementById('productPriceLineChart');
+
+                if (data.labels.length === 0) {
+                    const container = ctx.parentElement;
+                    container.innerHTML = '<p class="text-center text-muted fst-italic py-5">No products found to compare prices.</p>';
+                    return;
+                }
+                
+                // Define the primary color (success green) for the line
+                const lineColor = '#1cc88a'; 
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Price (₱)',
+                            data: data.prices,
+                            backgroundColor: 'rgba(28, 200, 138, 0.2)', // Light green fill area under the line
+                            borderColor: lineColor,
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: lineColor,
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: lineColor,
+                            pointHoverBorderColor: 'rgba(220, 220, 220, 1)',
+                            tension: 0.4, // Makes the line curved/smooth
+                            fill: true, // Fill the area under the line
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                title: { 
+                                    display: true, 
+                                    text: '',
+                                    color: '#198754',
+                                    font: { weight: 'bold' }
+                                },
+                                ticks: { 
+                                    color: '#198754',
+                                    maxRotation: 25, // Set max rotation to 45 degrees
+                                    minRotation: 25  // Set min rotation to 45 degrees
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Price (₱)',
+                                    color: '#198754',
+                                    font: { weight: 'bold' }
+                                },
+                                ticks: {
+                                    color: '#198754',
+                                    callback: function(value) {
+                                        return '₱' + value.toLocaleString();
+                                    }
+                                },
+                                grid: {
+                                    color: '#d1e7dd'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#198754',
+                                titleColor: '#e6f4ea',
+                                bodyColor: '#e6f4ea',
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        let value = context.parsed.y;
+                                        return label + ': ₱' + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching product price data:', error);
+                const container = document.getElementById('productPriceLineChart').parentElement;
+                container.innerHTML = '<p class="text-center text-danger fst-italic py-5">Error loading product price chart data.</p>';
+            });
+    });
+    </script>
+
+
+
+    </body>
 </html>

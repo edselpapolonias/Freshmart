@@ -23,6 +23,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.db import models
 
+
+
 def unverified_admin_or_superuser_required(view_func):
     """Decorator to restrict access to Admins (verified or not) OR Superusers."""
     @wraps(view_func)
@@ -406,4 +408,19 @@ def category_value_data(request):
     }
     
     # 3. Return the data as a JSON response
+    return JsonResponse(data)
+
+def product_price_data(request):
+    """
+    Returns JSON data for a line chart showing the prices of all products.
+    """
+    # Fetch all products, ordered by name for consistent charting
+    products = InventoryItem.objects.all().order_by('product_name')
+    
+    data = {
+        'labels': [product.product_name for product in products],
+        # Convert DecimalField values to float for JSON serialization
+        'prices': [float(product.price) for product in products],
+    }
+    
     return JsonResponse(data)
