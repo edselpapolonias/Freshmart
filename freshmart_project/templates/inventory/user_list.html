@@ -7,59 +7,70 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container mt-4">
-                <h2 class="mb-4">Registered Users</h2>
+                <h2 class="mb-4 fw-bold text-success">Registered Users</h2>
 
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Profile Picture</th>
-                                    <th>Username</th>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Email</th>
-                                    <th>Gender</th>
-                                    <th>Role</th>
-                                    <th>Verified</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user in users %}
-                                <tr>
-                                    <td>
-                                        {% if user.picture %}
-                                            <img src="{{ user.picture.url }}" alt="Profile" width="50" height="50" class="rounded-circle">
-                                        {% else %}
-                                            <span class="text-muted">No picture</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ user.user.username }}</td>
-                                    <td>{{ user.user.first_name }}</td>
-                                    <td>{{ user.user.last_name }}</td>
-                                    <td>{{ user.user.email }}</td>
-                                    <td>{{ user.gender }}</td>
-                                    <td>{{ user.role }}</td>
-                                    
-                                    <td class="text-center">
-                                        {% if user.role == 'Admin' %}
-                                            {% if user.is_verified %}
-                                                <span style="font-size: 1.2em; color: green;" title="Verified Admin">✔</span>
-                                            {% elif user.is_declined %}
-                                                <span style="font-size: 1.2em; color: red;" title="Declined Admin">❌</span>
-                                            {% else %}
-                                                <span style="font-size: 1.2em; color: black;" title="Pending Verification">⚫</span>
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="text-muted">N/A</span>
-                                        {% endif %}
-                                    </td>
+                <div class="card shadow-sm rounded-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped mb-0 align-middle">
+                                <thead class="table-success text-success text-center sticky-top" style="top: 0; z-index: 10;">
+                                    <tr>
+                                        <th scope="col" style="width: 70px;">Profile</th>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">First Name</th>
+                                        <th scope="col">Last Name</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Gender</th>
+                                        <th scope="col">Role</th>
+                                        <th scope="col" style="width: 100px;">Verified</th>
                                     </tr>
-                                {% empty %}
-                                <tr><td colspan="8" class="text-center">No registered users found.</td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr class="text-center align-middle">
+                                        <td class="text-center">
+                                            {% if user.picture %}
+                                                <img src="{{ user.picture.url }}" alt="Profile Picture" width="50" height="50" class="rounded-circle border border-2 border-success" style="object-fit: cover;">
+                                            {% else %}
+                                                <span class="text-muted fst-italic small">No picture</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-start">{{ user.user.username }}</td>
+                                        <td class="text-start">{{ user.user.first_name }}</td>
+                                        <td class="text-start">{{ user.user.last_name }}</td>
+                                        <td class="text-start text-truncate" style="max-width: 180px;" title="{{ user.user.email }}">{{ user.user.email }}</td>
+                                        <td>{{ user.gender|default:"-" }}</td>
+                                        <td>{{ user.role|default:"-" }}</td>
+                                        <td>
+                                            {% if user.role == 'Admin' %}
+                                                {% if user.is_verified %}
+                                                    <span class="badge bg-success" title="Verified Admin">
+                                                        <i class="bi bi-check-circle-fill"></i> Verified
+                                                    </span>
+                                                {% elif user.is_declined %}
+                                                    <span class="badge bg-danger" title="Declined Admin">
+                                                        <i class="bi bi-x-circle-fill"></i> Declined
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary" title="Pending Verification">
+                                                        <i class="bi bi-hourglass-split"></i> Pending
+                                                    </span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted fst-italic">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted fst-italic py-4">
+                                            No registered users found.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

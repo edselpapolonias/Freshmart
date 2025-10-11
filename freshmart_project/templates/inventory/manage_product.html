@@ -8,112 +8,124 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container mt-4">
-                <h2 class="mb-4">{% if edit_mode %}Edit Product{% else %}Add Product{% endif %}</h2>
+                <h2 class="mb-4 fw-bold text-success">
+                    {% if edit_mode %}Edit Product{% else %}Add Product{% endif %}
+                </h2>
 
                 {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
-                <div class="card shadow-sm mb-4">
+                <div class="card shadow-sm rounded-4 mb-5">
                     <div class="card-body">
-                        <form method="POST">
+                        <form method="POST" novalidate>
                             {% csrf_token %}
-                            <div class="row g-3">
+                            <div class="row g-4">
                                 <!-- Product Code -->
                                 <div class="col-md-6">
-                                    <label for="id_product_code" class="form-label">Product Code</label>
+                                    <label for="id_product_code" class="form-label fw-semibold">Product Code</label>
                                     {{ form.product_code|add_class:"form-control" }}
                                 </div>
 
                                 <!-- Product Name -->
                                 <div class="col-md-6">
-                                    <label for="id_product_name" class="form-label">Product Name</label>
+                                    <label for="id_product_name" class="form-label fw-semibold">Product Name</label>
                                     {{ form.product_name|add_class:"form-control" }}
                                 </div>
 
                                 <!-- Description -->
                                 <div class="col-12">
-                                    <label for="id_description" class="form-label">Description</label>
-                                    {{ form.description|add_class:"form-control"|attr:"rows:3,placeholder:Enter description" }}
+                                    <label for="id_description" class="form-label fw-semibold">Description</label>
+                                    {{ form.description|add_class:"form-control" | attr:"rows:3,placeholder:Enter description" }}
                                 </div>
 
                                 <!-- Price -->
                                 <div class="col-md-6">
-                                    <label for="id_price" class="form-label">Price (₱)</label>
+                                    <label for="id_price" class="form-label fw-semibold">Price (₱)</label>
                                     {{ form.price|add_class:"form-control" }}
                                 </div>
 
                                 <!-- Category -->
                                 <div class="col-md-6">
-                                    <label for="id_category" class="form-label">Category</label>
+                                    <label for="id_category" class="form-label fw-semibold">Category</label>
                                     {{ form.category|add_class:"form-control" }}
                                 </div>
 
                                 <!-- Buttons -->
                                 <div class="col-12 text-end mt-3">
                                     {% if edit_mode %}
-                                        <button type="submit" class="btn btn-success">Update Product</button>
-                                        <a href="{% url 'product_manage' %}" class="btn btn-secondary">Cancel</a>
+                                        <button type="submit" class="btn btn-success me-2 fw-semibold">
+                                            <i class="bi bi-pencil-square me-1"></i> Update Product
+                                        </button>
+                                        <a href="{% url 'product_manage' %}" class="btn btn-outline-secondary fw-semibold">Cancel</a>
                                     {% else %}
-                                        <button type="submit" class="btn btn-primary">Add Product</button>
+                                        <button type="submit" class="btn btn-primary fw-semibold">
+                                            <i class="bi bi-plus-circle me-1"></i> Add Product
+                                        </button>
                                     {% endif %}
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-                {% endif %} <!-- End Admin Only Form -->
+                {% endif %}
 
-                <hr>
+                <hr class="mb-4">
 
-                <h3 class="mt-4">Product List</h3>
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-bordered table-striped mt-2">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Product Code</th>
-                                    <th>Product Name</th>
-                                    <th>Description</th>
-                                    <th>Stock</th>
-                                    <th>Price</th>
-                                    <th>Category</th>
-                                    <th>Date Added</th>
-                                    {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
-                                    <th>Actions</th>
-                                    {% endif %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in items %}
-                                <tr>
-                                    <td>{{ item.product_code }}</td>
-                                    <td>{{ item.product_name }}</td>
-                                    <td>{{ item.description }}</td>
-                                    <td>{{ item.quantity_in_stock }}</td>
-                                    <td>₱{{ item.price }}</td>
-                                    <td>{{ item.category }}</td>
-                                    <td>{{ item.created_at }}</td>
-                                    {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
-                                    <td>
-                                        <a href="{% url 'product_detail' item.id %}" class="btn btn-info btn-sm">View</a>
-                                        <a href="{% url 'product_edit' item.id %}" class="btn btn-warning btn-sm">Edit</a>                                        
-                                        <form method="POST" action="{% url 'product_edit' item.id %}" style="display:inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" name="delete" class="btn btn-danger btn-sm"
-                                                onclick="return confirm('Are you sure you want to delete this product?');">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="{% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}8{% else %}7{% endif %}" class="text-center">No products available.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <h3 class="mb-3 fw-bold text-success">Product List</h3>
+                <div class="card shadow-sm rounded-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover mb-0">
+                                <thead class="table-success text-success text-center align-middle">
+                                    <tr>
+                                        <th>Product Code</th>
+                                        <th>Product Name</th>
+                                        <th>Stock</th>
+                                        <th>Price</th>
+                                        <th>Category</th>
+                                        <th>Date Added</th>
+                                        {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
+                                        <th>Actions</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                    <tr class="align-middle text-center">
+                                        <td>{{ item.product_code }}</td>
+                                        <td class="text-start">{{ item.product_name }}</td>
+                                        <td>{{ item.quantity_in_stock }}</td>
+                                        <td>₱{{ item.price|floatformat:2 }}</td>
+                                        <td>{{ item.category }}</td>
+                                        <td>{{ item.created_at|date:"M d, Y" }}</td>
+                                        {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
+                                        <td>
+                                            <a href="{% url 'product_detail' item.id %}" class="btn btn-info btn-sm me-1" title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'product_edit' item.id %}" class="btn btn-warning btn-sm me-1" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <form method="POST" action="{% url 'product_edit' item.id %}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                                {% csrf_token %}
+                                                <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="{% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}7{% else %}6{% endif %}" class="text-center text-muted fst-italic py-4">
+                                            No products available.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </main>
 

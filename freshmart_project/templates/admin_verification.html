@@ -24,23 +24,23 @@
                     {% endif %}
                 </div>
 
-                <table class="table table-bordered mt-4">
-                    <thead class="table-dark">
+                <table class="table table-hover table-striped mt-4 shadow rounded-4">
+                    <thead class="table-success text-success text-center align-middle sticky-top" style="top: 0; z-index: 10;">
                         <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Gender</th>
-                            <th>Action</th>
+                            <th class="text-start ps-4">Username</th>
+                            <th class="text-start">Email</th>
+                            <th class="text-center">Gender</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for profile in pending_admins %}
-                        <tr id="row-{{ profile.id }}">
-                            <td>{{ profile.user.username }}</td>
-                            <td>{{ profile.user.email }}</td>
-                            <td>{{ profile.gender }}</td>
-                            <td>
-                                <button class="btn btn-info btn-sm btn-view" 
+                        <tr id="row-{{ profile.id }}" class="align-middle">
+                            <td class="text-start ps-4 fw-semibold">{{ profile.user.username }}</td>
+                            <td class="text-start text-truncate" style="max-width: 280px;" title="{{ profile.user.email }}">{{ profile.user.email }}</td>
+                            <td class="text-center text-capitalize">{{ profile.gender }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-info btn-sm btn-view me-2" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#viewAdminModal"
                                         data-username="{{ profile.user.username }}"
@@ -49,21 +49,25 @@
                                         data-email="{{ profile.user.email }}"
                                         data-gender="{{ profile.gender }}"
                                         data-picture="{% if profile.picture %}{{ profile.picture.url }}{% else %}/static/images/default-avatar.png{% endif %}">
-                                    View
+                                    <i class="bi bi-eye-fill"></i> View
                                 </button>
 
-                                <button class="btn btn-success btn-sm btn-approve" 
+                                <button class="btn btn-success btn-sm btn-approve me-2" 
                                         data-id="{{ profile.id }}" 
-                                        data-url="{% url 'approve_admin' profile.id %}">Accept</button>
+                                        data-url="{% url 'approve_admin' profile.id %}">
+                                    <i class="bi bi-check-circle-fill"></i> Accept
+                                </button>
 
                                 <button class="btn btn-danger btn-sm btn-decline" 
                                         data-id="{{ profile.id }}" 
-                                        data-url="{% url 'decline_admin' profile.id %}">Decline</button>
+                                        data-url="{% url 'decline_admin' profile.id %}">
+                                    <i class="bi bi-x-circle-fill"></i> Decline
+                                </button>
                             </td>
                         </tr>
                         {% empty %}
                         <tr id="no-pending">
-                            <td colspan="4" class="text-center">No pending admin verifications.</td>
+                            <td colspan="4" class="text-center fst-italic text-muted py-4">No pending admin verifications.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -77,7 +81,6 @@
 
 {% include "partials/scripts.html" %}
 
-!-- Admin Details Modal -->
 <div class="modal fade" id="viewAdminModal" tabindex="-1" aria-labelledby="viewAdminModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-md">
     <div class="modal-content border-0 shadow-lg rounded-4">

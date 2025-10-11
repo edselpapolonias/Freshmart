@@ -1,20 +1,46 @@
+<style>
+  /* Custom green sidebar styles */
+  .sb-sidenav-green {
+    background-color: #198754; /* Bootstrap's green */
+    color: #e6f4ea; /* Light greenish text for contrast */
+  }
+  .sb-sidenav-green .sb-nav-link-icon i {
+    color: #d1e7dd; /* lighter green for icons */
+  }
+  .sb-sidenav-green .nav-link {
+    color: #d1e7dd;
+  }
+  .sb-sidenav-green .nav-link:hover,
+  .sb-sidenav-green .nav-link.active {
+    color: #ffffff;
+    background-color: #14532d; /* Darker green on hover/active */
+  }
+  .sb-sidenav-green .sb-sidenav-menu-heading {
+    color: #bbe4b5; /* Soft green for headings */
+  }
+  .sb-sidenav-green .sb-sidenav-footer {
+    background-color: #14532d;
+    color: #c7f0c2;
+  }
+</style>
+
 <div id="layoutSidenav_nav">
-    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+    <nav class="sb-sidenav accordion sb-sidenav-green" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
             <div class="nav">
-                <div class="sb-sidenav-menu-heading">Core</div>
+                <div class="sb-sidenav-menu-heading text-uppercase fw-bold">Core</div>
                 <a class="nav-link" href="{% url 'index' %}">
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Dashboard
                 </a>
-               
-                <div class="sb-sidenav-menu-heading">Main</div>
+
+                <div class="sb-sidenav-menu-heading text-uppercase fw-bold mt-3">Main</div>
                 <a class="nav-link" href="{% url 'product_manage' %}">
                     <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
                     Product Management
                 </a>
-                <a class="nav-link" href="{% url 'category_list_add'%}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                <a class="nav-link" href="{% url 'category_list_add' %}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
                     Category Management
                 </a>
                 <a class="nav-link" href="{% url 'stock_management' %}">
@@ -22,28 +48,29 @@
                     Stock Management
                 </a>
                 <a class="nav-link" href="{% url 'stock_history' %}">
-                     <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
+                    <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
                     Stock History
                 </a>
 
                 {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
-                <div class="sb-sidenav-menu-heading">Users</div> <!-- New heading -->
-                
+                <div class="sb-sidenav-menu-heading text-uppercase fw-bold mt-3">Users</div>
                 <a class="nav-link" href="{% url 'user_list' %}">
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                    Users
+                    Users List
                 </a>
-
                 <a class="nav-link" href="{% url 'admin_verification' %}">
-                    <i class="fas fa-user-check"></i> Admin Verification
+                    <div class="sb-nav-link-icon"><i class="fas fa-user-check"></i></div>
+                    Admin Verification
                 </a>
                 {% endif %}
-                
             </div>
         </div>
-        <div class="sb-sidenav-footer">
+
+        <div class="sb-sidenav-footer border-top mt-auto px-3 py-2">
             <div class="small">Logged in as:</div>
-            {{ request.user.first_name }} {{ request.user.last_name }}
+            <div class="fw-semibold">
+                {{ request.user.first_name }} {{ request.user.last_name }}
+            </div>
         </div>
     </nav>
 </div>
