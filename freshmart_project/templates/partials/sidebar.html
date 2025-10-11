@@ -1,50 +1,49 @@
 <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
-                        <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="{% url 'index' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Dashboard
-                            </a>
-                           
-                            <div class="sb-sidenav-menu-heading">Main</div>
-                            <a class="nav-link" href="{% url 'product_manage' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
-                                Product Management
-                            </a>
-                            <a class="nav-link" href="{% url 'category_list_add'%}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
-                                Category Management
-                            </a>
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+                <div class="sb-sidenav-menu-heading">Core</div>
+                <a class="nav-link" href="{% url 'index' %}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    Dashboard
+                </a>
+               
+                <div class="sb-sidenav-menu-heading">Main</div>
+                <a class="nav-link" href="{% url 'product_manage' %}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
+                    Product Management
+                </a>
+                <a class="nav-link" href="{% url 'category_list_add'%}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                    Category Management
+                </a>
+                <a class="nav-link" href="{% url 'stock_management' %}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-boxes"></i></div>
+                    Stock Management
+                </a>
+                <a class="nav-link" href="{% url 'stock_history' %}">
+                     <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
+                    Stock History
+                </a>
 
-                            <a class="nav-link" href="{% url 'stock_management' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-boxes"></i></div>
-                                Stock Management
-                            </a>
+                {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
+                <div class="sb-sidenav-menu-heading">Users</div> <!-- New heading -->
+                
+                <a class="nav-link" href="{% url 'user_list' %}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                    Users
+                </a>
 
-                            <a class="nav-link" href="{% url 'stock_history' %}">
-                                 <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
-                                Stock History
-                            </a>
-
-                            {% if request.user.is_authenticated and request.user.userprofile.role == 'Admin' %}
-                            <a class="nav-link" href="{% url 'user_list' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                                Users
-                            </a>
-                            
-
-                            <a class="nav-link" href="{% url 'admin_verification' %}">
-                                <i class="fas fa-user-check"></i> Admin Verification
-                            </a>
-                            {% endif %}
-                            
-                        </div>
-                    </div>
-                    <div class="sb-sidenav-footer">
-                        <div class="small">Logged in as:</div>
-                        {{ request.user.first_name }} {{ request.user.last_name }}
-                    </div>
-                </nav>
+                <a class="nav-link" href="{% url 'admin_verification' %}">
+                    <i class="fas fa-user-check"></i> Admin Verification
+                </a>
+                {% endif %}
+                
             </div>
+        </div>
+        <div class="sb-sidenav-footer">
+            <div class="small">Logged in as:</div>
+            {{ request.user.first_name }} {{ request.user.last_name }}
+        </div>
+    </nav>
+</div>
