@@ -23,8 +23,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.db import models
 
-
-
 def unverified_admin_or_superuser_required(view_func):
     """Decorator to restrict access to Admins (verified or not) OR Superusers."""
     @wraps(view_func)
@@ -147,7 +145,23 @@ def category_edit(request, pk):
 
 def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
-    category.delete()
+
+    related_products_count = category.inventoryitem_set.count() # Use the reverse relationship manager
+    
+    if related_products_count > 0:
+        # If products are found, prevent deletion and show an error message
+        messages.error(request, f"Cannot delete category '{category.category_name}'. It is linked to {related_products_count} product(s). Please move or delete the linked products first.")
+        # Redirect back to the list page
+        return redirect('category_list_add') 
+    
+    # If no related products exist, proceed with deletion
+    try:
+        category.delete()
+        messages.success(request, f"Category '{category.category_name}' successfully deleted.")
+    except Exception as e:
+        # Catch any unexpected database errors during deletion
+        messages.error(request, f"An unexpected error occurred during deletion: {e}")
+        
     return redirect('category_list_add')
 
 def product_detail(request, pk):
