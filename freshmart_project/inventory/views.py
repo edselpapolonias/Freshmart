@@ -23,6 +23,7 @@ from django.db import models
 from django.utils.timezone import make_aware
 from datetime import datetime
 from .models import InventoryItem, ProductHistory
+from django.urls import reverse
 
 
 
@@ -491,3 +492,48 @@ def product_price_data(request):
     }
     
     return JsonResponse(data)
+
+def get_alerts(request):
+    alerts = []
+
+    # 1️⃣ Out of stock alerts
+    out_of_stock_items = InventoryItem.objects.filter(quantity_in_stock=0)
+    for item in out_of_stock_items:
+        alerts.append({
+            "type": "danger",
+            "message": f"{item.product_name} is out of stock!",
+            "url": reverse('stock_management')  # ✅ correct destination for stock issues
+        })
+
+    # 2️⃣ Almost out of stock alerts (1–20)
+    almost_out_items = InventoryItem.objects.filter(quantity_in_stock__gte=1, quantity_in_stock__lte=20)
+    for item in almost_out_items:
+        alerts.append({
+            "type": "warning",
+            "message": f"{item.product_name} is almost out of stock!",
+            "url": reverse('stock_management')  # ✅ same link
+        })
+
+    # 3️⃣ Pending admin verification alerts (for admins only)
+    if (
+        request.user.is_authenticated
+        and hasattr(request.user, 'userprofile')
+        and request.user.userprofile.role == 'Admin'
+    ):
+        pending_admin_count = UserProfile.objects.filter(
+            role='Admin',
+            is_verified=False,
+            is_declined=False
+        ).exclude(user=request.user).count()
+
+        if pending_admin_count > 0:
+            alerts.append({
+                "type": "info",
+                "message": f"{pending_admin_count} pending admin verification(s).",
+                "url": reverse('admin_verification')  # ✅ correct link for admin verifications
+            })
+
+    return JsonResponse({
+        "alerts": alerts,
+        "count": len(alerts)
+    })

@@ -30,6 +30,8 @@ urlpatterns = [
     path('data/category-quantity/', views.category_quantity_data, name='category_quantity_data'),
     path('data/category-value/', views.category_value_data, name='category_value_data'),
     path('data/product-prices/', views.product_price_data, name='product_price_data'),
+
+    path('alerts/', views.get_alerts, name='get_alerts'),
 ]
 
 

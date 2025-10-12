@@ -10,27 +10,34 @@
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-        <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-            <button class="btn" id="btnNavbarSearch" type="button" style="background-color: #14532d; color: #e6f4ea;">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    </form>
+    <!-- Everything inside here will be pushed to the right -->
+    <ul class="navbar-nav ms-auto me-3 me-lg-4 d-flex align-items-center gap-3">
+        <!-- 🔔 Notification Bell -->
+        <li class="nav-item dropdown position-relative">
+            <a class="nav-link position-relative px-2" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #d1e7dd; font-size: 1.3rem;">
+                <i class="fas fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="alertCount" style="font-size: 0.7rem; min-width: 18px; height: 18px; line-height: 18px;">
+                    0
+                    <span class="visually-hidden">unread alerts</span>
+                </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end p-0 shadow border-0 rounded-3" aria-labelledby="alertsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;" id="alertList">
+                <li class="dropdown-header fw-bold bg-success text-white p-3 rounded-top">Notifications</li>
+                <li><hr class="dropdown-divider my-1"></li>
+                <li class="text-center text-muted py-3" id="noAlertsMsg">No alerts</li>
+            </ul>
+        </li>
 
-    <!-- Navbar User Dropdown -->
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <!-- 👤 User Dropdown -->
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #d1e7dd;">
                 {% if profile_picture_url %}
-                    <img src="{{ profile_picture_url }}" alt="Profile" class="rounded-circle" width="30" height="30">
+                    <img src="{{ profile_picture_url }}" alt="Profile" class="rounded-circle" width="36" height="36" style="object-fit: cover; border: 2px solid #198754;">
                 {% else %}
-                    <i class="fas fa-user fa-fw"></i>
+                    <i class="fas fa-user fa-fw fa-lg"></i>
                 {% endif %}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" aria-labelledby="navbarDropdown" style="min-width: 200px;">
                 <li class="dropdown-header fw-bold">{{ request.user.first_name }} {{ request.user.last_name }}</li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
@@ -38,3 +45,79 @@
         </li>
     </ul>
 </nav>
+
+<style>
+    /* Notification dropdown item styles */
+    #alertList li.dropdown-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #e9ecef;
+        cursor: default;
+        transition: background-color 0.15s ease-in-out;
+    }
+    #alertList li.dropdown-item:hover {
+        background-color: #d1e7dd; /* light green highlight */
+        color: #0f5132;
+    }
+    #alertList li.text-danger {
+        color: #842029 !important;
+    }
+    #alertList li.text-warning {
+        color: #664d03 !important;
+    }
+    #alertList li.text-info {
+        color: #0c5460 !important;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const alertCountElem = document.getElementById('alertCount');
+    const alertListElem = document.getElementById('alertList');
+    const noAlertsMsg = document.getElementById('noAlertsMsg');
+
+    async function fetchAlerts() {
+        try {
+            const response = await fetch("{% url 'get_alerts' %}");
+            const data = await response.json();
+
+            const alerts = data.alerts || [];
+            const count = data.count || 0;
+
+            alertCountElem.textContent = count;
+            alertCountElem.style.display = count > 0 ? 'inline-block' : 'none';
+
+            // Clear previous alerts
+            while (alertListElem.childNodes.length > 2) {
+                alertListElem.removeChild(alertListElem.lastChild);
+            }
+
+            if (alerts.length === 0) {
+                noAlertsMsg.style.display = 'block';
+            } else {
+                noAlertsMsg.style.display = 'none';
+                alerts.forEach(alert => {
+                    const li = document.createElement('li');
+                    li.className = `dropdown-item text-${alert.type || 'info'}`;
+                    li.textContent = alert.message;
+
+                    // Make alert clickable
+                    if (alert.url) {
+                        li.style.cursor = 'pointer';
+                        li.addEventListener('click', () => {
+                            window.location.href = alert.url;
+                        });
+                    }
+
+                    alertListElem.appendChild(li);
+                });
+            }
+        } catch (err) {
+            console.error("Error fetching alerts:", err);
+        }
+    }
+
+    fetchAlerts();
+    setInterval(fetchAlerts, 60000);
+});
+</script>
