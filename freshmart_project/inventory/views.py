@@ -1,14 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import InventoryItem, StockHistory
 from .forms import InventoryItemForm
-from django.shortcuts import render
 from .forms import CategoryForm 
 from .models import Category
 from .forms import StockForm
 from django.db.models import Sum, F, Count
 from django.contrib import messages
 from django.db.models.functions import Lower
-from django.shortcuts import render
 from django.db.models.functions import TruncDate
 from .models import UserProfile
 from .forms import UserRegistrationForm
@@ -22,6 +20,11 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.db import models
+from django.utils.timezone import make_aware
+from datetime import datetime
+from .models import InventoryItem, ProductHistory
+
+
 
 def unverified_admin_or_superuser_required(view_func):
     """Decorator to restrict access to Admins (verified or not) OR Superusers."""
@@ -74,35 +77,69 @@ def admin_required(view_func):
 
 @login_required
 def product_manage(request, pk=None):
-    if pk:  # For edit mode
-        item = get_object_or_404(InventoryItem, pk=pk)
+    if pk:
+        item = get_object_or_404(InventoryItem, id=pk)
         edit_mode = True
     else:
         item = None
         edit_mode = False
 
-    # Handle form submission
-    if request.method == 'POST':
-        if 'delete' in request.POST:
-            # Handle delete directly
-            if item:
-                item.delete()
-            return redirect('product_manage')
+    if request.method == "POST":
+        if "delete" in request.POST:
+            # 🗑 Delete Product
+            ProductHistory.objects.create(
+                product=item,
+                action="Deleted",
+                description=f"You deleted the product '{item.product_name}'.",
+                user=request.user,
+            )
+            item.delete()
+            messages.success(request, "Product deleted successfully.")
+            return redirect("product_manage")
 
-        form = InventoryItemForm(request.POST, instance=item)
-        if form.is_valid():
-            form.save()
-            return redirect('product_manage')
+        else:
+            # 📝 Add or Update Product
+            from .forms import InventoryItemForm
+            form = InventoryItemForm(request.POST, instance=item)
+            if form.is_valid():
+                product = form.save(commit=False)
+                product.save()
+
+                if edit_mode:
+                    ProductHistory.objects.create(
+                        product=product,
+                        action="Updated",
+                        description=f"You updated the product '{product.product_name}'.",
+                        user=request.user,
+                    )
+                    messages.success(request, "Product updated successfully.")
+                else:
+                    ProductHistory.objects.create(
+                        product=product,
+                        action="Added",
+                        description=f"You added a new product '{product.product_name}'.",
+                        user=request.user,
+                    )
+                    messages.success(request, "Product added successfully.")
+                return redirect("product_manage")
     else:
+        from .forms import InventoryItemForm
         form = InventoryItemForm(instance=item)
 
-    # Fetch all products
+    # 🔍 Search filter
+    query = request.GET.get("q")
     items = InventoryItem.objects.all()
+    if query:
+        items = items.filter(product_name__icontains=query) | items.filter(product_code__icontains=query)
 
-    return render(request, 'inventory/manage_product.html', {
-        'form': form,
-        'items': items,
-        'edit_mode': edit_mode,
+    # 🧾 Get Product History (latest first)
+    history = ProductHistory.objects.order_by("-date")
+
+    return render(request, "inventory/manage_product.html", {
+        "form": form,
+        "items": items,
+        "edit_mode": edit_mode,
+        "history": history,
     })
 
 def index(request):
@@ -226,7 +263,23 @@ def stock_management(request):
 @login_required
 def stock_history(request):
     history = StockHistory.objects.select_related('product').order_by('-date')
-    return render(request, 'inventory/stock_history.html', {'history': history})
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    action_filter = request.GET.get('action')
+
+    # Filter by date range
+    if start_date and end_date:
+        start = make_aware(datetime.strptime(start_date, "%Y-%m-%d"))
+        end = make_aware(datetime.strptime(end_date, "%Y-%m-%d"))
+        history = history.filter(date__range=[start, end])
+
+    # Filter by action type
+    if action_filter:
+        history = history.filter(action=action_filter)
+
+    context = {'history': history}
+    return render(request, 'inventory/stock_history.html', context)
 
 @login_required
 def dashboard(request):

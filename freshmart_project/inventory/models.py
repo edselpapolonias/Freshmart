@@ -8,7 +8,6 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 
-
 class InventoryItem(models.Model):
     product_name = models.CharField(max_length=100)
     product_code = models.CharField(max_length=50)
@@ -58,3 +57,18 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class ProductHistory(models.Model):
+    ACTION_CHOICES = [
+        ('Added', 'Added'),
+        ('Updated', 'Updated'),
+        ('Deleted', 'Deleted'),
+    ]
+    product = models.ForeignKey('InventoryItem', on_delete=models.CASCADE, null=True, blank=True)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    description = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.action} - {self.product.product_name if self.product else 'Unknown'}"

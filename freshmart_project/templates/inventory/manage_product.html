@@ -56,8 +56,12 @@
                                         </button>
                                         <a href="{% url 'product_manage' %}" class="btn btn-outline-secondary fw-semibold">Cancel</a>
                                     {% else %}
-                                        <button type="submit" class="btn btn-primary fw-semibold">
+                                        <button type="submit" class="btn btn-primary fw-semibold me-2">
                                             <i class="bi bi-plus-circle me-1"></i> Add Product
+                                        </button>
+                                        <!-- 🧾 History Button -->
+                                        <button type="button" class="btn btn-outline-success fw-semibold" data-bs-toggle="modal" data-bs-target="#historyModal">
+                                            <i class="bi bi-clock-history me-1"></i> History
                                         </button>
                                     {% endif %}
                                 </div>
@@ -70,6 +74,22 @@
                 <hr class="mb-4">
 
                 <h3 class="mb-3 fw-bold text-success">Product List</h3>
+
+                <!-- 🔍 Search Bar -->
+                <form method="get" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Search by Product Name or Code">
+                        <button class="btn btn-success fw-semibold" type="submit">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                        {% if request.GET.q %}
+                            <a href="{% url 'product_manage' %}" class="btn btn-outline-secondary fw-semibold">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+
                 <div class="card shadow-sm rounded-4">
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -122,6 +142,31 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🧾 History Modal -->
+                <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content rounded-4">
+                            <div class="modal-header bg-success text-white rounded-top-4">
+                                <h5 class="modal-title fw-bold" id="historyModalLabel">Product History</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                {% if history %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for record in history %}
+                                        <li class="list-group-item">
+                                            <span class="fw-bold text-success">{{ record.date|date:"M d, Y H:i" }}</span> — {{ record.description }}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-center text-muted fst-italic mb-0">No history available.</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

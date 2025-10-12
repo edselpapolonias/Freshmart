@@ -8,6 +8,37 @@
         <main>
             <div class="container mt-4">
                 <h2 class="mb-4 fw-bold text-success">Stock History</h2>
+
+                <!-- 📅 Date & Action Filter -->
+                <form method="get" class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label for="start_date" class="form-label fw-semibold">From:</label>
+                        <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end_date" class="form-label fw-semibold">To:</label>
+                        <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="action" class="form-label fw-semibold">Action:</label>
+                        <select name="action" id="action" class="form-select">
+                            <option value="">All</option>
+                            <option value="ADD" {% if request.GET.action == "ADD" %}selected{% endif %}>Added</option>
+                            <option value="DEDUCT" {% if request.GET.action == "DEDUCT" %}selected{% endif %}>Deducted</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success fw-semibold me-2">
+                            <i class="bi bi-filter-circle"></i> Filter
+                        </button>
+                        {% if request.GET.start_date or request.GET.end_date or request.GET.action %}
+                            <a href="{% url 'stock_history' %}" class="btn btn-outline-secondary fw-semibold">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+
                 <div class="card shadow-sm rounded-4">
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -38,9 +69,7 @@
                                                 <span class="badge bg-danger">{{ item.get_action_display }}</span>
                                             {% endif %}
                                         </td>
-                                        <td>
-                                            <small class="text-muted">{{ item.date|date:"M d, Y H:i" }}</small>
-                                        </td>
+                                        <td><small class="text-muted">{{ item.date|date:"M d, Y H:i" }}</small></td>
                                     </tr>
                                     {% empty %}
                                     <tr>
