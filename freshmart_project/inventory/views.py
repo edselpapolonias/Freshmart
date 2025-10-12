@@ -86,17 +86,17 @@ def product_manage(request, pk=None):
 
     if request.method == "POST":
         if "delete" in request.POST:
-            # 🗑 Delete Product
+            # 🗑 Save history BEFORE deleting product
             ProductHistory.objects.create(
-                product=item,
+                product=item,  # Safe because ProductHistory.product uses SET_NULL
                 action="Deleted",
                 description=f"You deleted the product '{item.product_name}'.",
                 user=request.user,
             )
+            # Delete the product
             item.delete()
             messages.success(request, "Product deleted successfully.")
             return redirect("product_manage")
-
         else:
             # 📝 Add or Update Product
             from .forms import InventoryItemForm
