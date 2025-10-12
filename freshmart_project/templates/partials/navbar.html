@@ -23,10 +23,16 @@
     <!-- Navbar User Dropdown -->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #d1e7dd;">
-                <i class="fas fa-user fa-fw"></i>
+            <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if profile_picture_url %}
+                    <img src="{{ profile_picture_url }}" alt="Profile" class="rounded-circle" width="30" height="30">
+                {% else %}
+                    <i class="fas fa-user fa-fw"></i>
+                {% endif %}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li class="dropdown-header fw-bold">{{ request.user.first_name }} {{ request.user.last_name }}</li>
+                <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </li>
