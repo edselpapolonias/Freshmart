@@ -24,6 +24,9 @@ from django.utils.timezone import make_aware
 from datetime import datetime
 from .models import InventoryItem, ProductHistory
 from django.urls import reverse
+import csv
+from django.http import HttpResponse
+
 
 
 
@@ -136,11 +139,15 @@ def product_manage(request, pk=None):
     # 🧾 Get Product History (latest first)
     history = ProductHistory.objects.order_by("-date")
 
+    from .models import Category
+    categories = Category.objects.all()
+
     return render(request, "inventory/manage_product.html", {
         "form": form,
         "items": items,
         "edit_mode": edit_mode,
         "history": history,
+        "categories": categories,
     })
 
 def index(request):
@@ -569,3 +576,33 @@ def get_alerts(request):
         "alerts": alerts,
         "count": len(alerts)
     })
+
+def export_products_csv(request):
+    if request.method == "POST":
+        selected_categories = request.POST.getlist("categories")
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="products.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(['Product Code', 'Product Name', 'Quantity', 'Price (₱)', 'Category'])
+
+        if selected_categories and "all" not in selected_categories:
+            items = InventoryItem.objects.filter(category__id__in=selected_categories)
+        else:
+            items = InventoryItem.objects.all()
+
+        for item in items:
+            writer.writerow([
+                item.product_code,
+                item.product_name,
+                item.quantity_in_stock,
+                f"{item.price:.2f}",
+                item.category.category_name if item.category else "Uncategorized"
+            ])
+
+        return response
+
+    # If GET request → return modal options
+    categories = Category.objects.all()
+    return render(request, "inventory/export_modal.html", {"categories": categories})

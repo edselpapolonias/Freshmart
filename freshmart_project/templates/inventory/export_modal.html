@@ -1,0 +1,35 @@
+<form method="POST" action="{% url 'export_products' %}">
+    {% csrf_token %}
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4">
+                <div class="modal-header bg-success text-white rounded-top-4">
+                    <h5 class="modal-title fw-bold" id="exportModalLabel">Export to CSV</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fw-semibold mb-2">Select Categories to Export:</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="categories" value="all" id="allCategories" checked>
+                        <label class="form-check-label fw-semibold" for="allCategories">All Categories</label>
+                    </div>
+                    <hr>
+                    {% for category in categories %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categories" value="{{ category.id }}" id="cat{{ category.id }}">
+                            <label class="form-check-label" for="cat{{ category.id }}">{{ category.category_name }}</label>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted fst-italic">No categories available.</p>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success fw-semibold">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Generate CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary fw-semibold" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -59,6 +59,10 @@
                                         <button type="submit" class="btn btn-primary fw-semibold me-2">
                                             <i class="bi bi-plus-circle me-1"></i> Add Product
                                         </button>
+
+                                        <button type="button" class="btn btn-outline-success fw-semibold" data-bs-toggle="modal" data-bs-target="#exportModal">
+                                            <i class="bi bi-file-earmark-spreadsheet"></i> Generate CSV
+                                        </button>
                                         <!-- 🧾 History Button -->
                                         <button type="button" class="btn btn-outline-success fw-semibold" data-bs-toggle="modal" data-bs-target="#historyModal">
                                             <i class="bi bi-clock-history me-1"></i> History
@@ -179,5 +183,6 @@
 </div>
 
 {% include "partials/scripts.html" %}
+{% include "inventory/export_modal.html" %}
 </body>
 </html>
