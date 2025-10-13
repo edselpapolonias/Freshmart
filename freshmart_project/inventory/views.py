@@ -26,8 +26,9 @@ from .models import InventoryItem, ProductHistory
 from django.urls import reverse
 import csv
 from django.http import HttpResponse
-
-
+from django import forms
+from .forms import UserProfileForm
+from django.contrib import messages
 
 
 def unverified_admin_or_superuser_required(view_func):
@@ -286,7 +287,12 @@ def stock_history(request):
     if action_filter:
         history = history.filter(action=action_filter)
 
-    context = {'history': history}
+    categories = Category.objects.all()  # pass categories to modal
+
+    context = {
+        'history': history,
+        'categories': categories
+    }
     return render(request, 'inventory/stock_history.html', context)
 
 @login_required
@@ -618,3 +624,73 @@ def export_products_csv(request):
     # If GET request → show modal
     categories = Category.objects.all()
     return render(request, "inventory/export_modal.html", {"categories": categories})
+
+@login_required
+def user_profile(request):
+    profile = request.user.userprofile
+    return render(request, 'profile/profile_view.html', {'profile': profile})
+
+@login_required
+def edit_profile(request):
+    profile = request.user.userprofile
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
+        if form.is_valid():
+            # Save user fields
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+            request.user.email = form.cleaned_data['email']
+            request.user.save()
+            # Save profile fields
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('user_profile')
+    else:
+        form = UserProfileForm(instance=profile, user=request.user)
+    return render(request, 'profile/edit_profile.html', {'form': form, 'profile': profile})
+
+def export_stock_csv(request):
+    # Get filters
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    action = request.GET.get('action')
+    category_id = request.GET.get('category')
+    filename = request.GET.get('filename', '').strip()  # <-- get filename from modal
+
+    if not filename:
+        filename = 'stock_history'
+    if not filename.lower().endswith('.csv'):
+        filename += '.csv'
+
+    queryset = StockHistory.objects.all().select_related('product', 'product__category')
+
+    if start_date:
+        queryset = queryset.filter(date__date__gte=start_date)
+    if end_date:
+        queryset = queryset.filter(date__date__lte=end_date)
+    if action:
+        queryset = queryset.filter(action=action)
+    if category_id:
+        queryset = queryset.filter(product__category_id=category_id)
+
+    # Create response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'  # <-- dynamic filename
+
+    writer = csv.writer(response)
+    writer.writerow(['Product Code', 'Product Name', 'Old Quantity', 'Input Quantity', 'New Quantity', 'Action', 'Date', 'Category'])
+
+    for item in queryset:
+        writer.writerow([
+            item.product.product_code,
+            item.product.product_name,
+            item.old_quantity,
+            item.input_quantity,
+            item.new_quantity,
+            item.get_action_display(),
+            item.date.strftime("%Y-%m-%d %H:%M"),
+            item.product.category.category_name if item.product.category else ''
+        ])
+
+    return response
+

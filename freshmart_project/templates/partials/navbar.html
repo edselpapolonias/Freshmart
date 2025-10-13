@@ -29,6 +29,7 @@
         </li>
 
         <!-- 👤 User Dropdown -->
+        <!-- User Dropdown -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #d1e7dd;">
                 {% if profile_picture_url %}
@@ -38,7 +39,13 @@
                 {% endif %}
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow rounded-3" aria-labelledby="navbarDropdown" style="min-width: 200px;">
-                <li class="dropdown-header fw-bold">{{ request.user.first_name }} {{ request.user.last_name }}</li>
+                <li class="dropdown-header fw-bold d-flex align-items-center gap-1">
+                    {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% if request.user.userprofile.role == "Admin" and request.user.userprofile.is_verified %}
+                        <i class="fas fa-check-circle text-success" title="Verified Admin" style="font-size: 0.9rem;"></i>
+                    {% endif %}
+                </li>
+                <li><a class="dropdown-item" href="{% url 'user_profile' %}">Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
             </ul>

@@ -1,0 +1,47 @@
+{% include "partials/header.html" %}
+<body class="sb-nav-fixed">
+{% include "partials/navbar.html" %}
+
+<div id="layoutSidenav">
+    {% include "partials/sidebar.html" %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container mt-5 d-flex justify-content-center">
+                <div class="card shadow rounded-4 p-4" style="max-width: 480px; width: 100%;">
+                    <div class="text-center mb-4">
+                        {% if profile.picture %}
+                            <img src="{{ profile.picture.url }}" alt="Profile Picture" class="rounded-circle border border-3 border-success" width="140" height="140" style="object-fit: cover;">
+                        {% else %}
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary bg-opacity-25 border border-3 border-secondary" style="width: 140px; height: 140px;">
+                                <i class="fas fa-user fa-6x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h3 class="text-center fw-bold mb-4 text-success">{{ profile.user.first_name }} {{ profile.user.last_name }}</h3>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                            <span class="text-muted fw-semibold">Email</span>
+                            <span class="text-dark text-truncate" style="max-width: 250px;" title="{{ profile.user.email }}">{{ profile.user.email }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                            <span class="text-muted fw-semibold">Gender</span>
+                            <span class="text-dark text-capitalize">{{ profile.get_gender_display }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-3">
+                            <span class="text-muted fw-semibold">Role</span>
+                            <span class="text-dark">{{ profile.get_role_display }}</span>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <a href="{% url 'edit_profile' %}" class="btn btn-success fw-semibold shadow-sm">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+        {% include "partials/footer.html" %}
+    </div>
+</div>
+
+{% include "partials/scripts.html" %}
+</body>
+</html>

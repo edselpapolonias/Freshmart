@@ -1,0 +1,61 @@
+<!-- stock_export_modal.html -->
+<div class="modal fade" id="stockExportModal" tabindex="-1" aria-labelledby="stockExportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="get" action="{% url 'export_stock_csv' %}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stockExportModalLabel">Generate Stock CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Filename input -->
+                    <div class="mb-3">
+                        <label for="filename" class="form-label fw-semibold">File Name</label>
+                        <input type="text" class="form-control" name="filename" id="filename" placeholder="Enter file name">
+                    </div>
+
+                    <!-- Date filters -->
+                    <div class="row g-3 mb-3">
+                        <div class="col">
+                            <label for="start_date_modal" class="form-label fw-semibold">From</label>
+                            <input type="date" name="start_date" id="start_date_modal" class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="end_date_modal" class="form-label fw-semibold">To</label>
+                            <input type="date" name="end_date" id="end_date_modal" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Action filter -->
+                    <div class="mb-3">
+                        <label for="action_modal" class="form-label fw-semibold">Action</label>
+                        <select name="action" id="action_modal" class="form-select">
+                            <option value="">All</option>
+                            <option value="ADD">Added</option>
+                            <option value="DEDUCT">Deducted</option>
+                        </select>
+                    </div>
+
+                    <!-- Category filter -->
+                    <div class="mb-3">
+                        <label for="category_modal" class="form-label fw-semibold">Category</label>
+                        <select name="category" id="category_modal" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.category_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Generate CSV
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

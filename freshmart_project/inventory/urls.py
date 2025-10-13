@@ -34,6 +34,10 @@ urlpatterns = [
 
     path('alerts/', views.get_alerts, name='get_alerts'),
     path('export-products/', views.export_products_csv, name='export_products'),
+    path('export_stock_csv/', views.export_stock_csv, name='export_stock_csv'),
+
+    path('profile/', views.user_profile, name='user_profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
 ]
 
 

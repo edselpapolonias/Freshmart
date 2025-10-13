@@ -1,0 +1,75 @@
+{% include "partials/header.html" %}
+<body class="sb-nav-fixed">
+{% include "partials/navbar.html" %}
+
+<div id="layoutSidenav">
+    {% include "partials/sidebar.html" %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container mt-5 d-flex justify-content-center">
+                <div class="card shadow rounded-4 p-4" style="max-width: 480px; width: 100%;">
+                    <h3 class="text-center fw-bold mb-4 text-success">Edit Profile</h3>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Profile Picture -->
+                        <div class="mb-3 text-center">
+                            {% if profile.picture %}
+                                <img src="{{ profile.picture.url }}" alt="Profile Picture" class="rounded-circle border border-3 border-success mb-2" width="120" height="120" style="object-fit: cover;">
+                            {% else %}
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary bg-opacity-25 border border-3 border-secondary mb-2" style="width: 120px; height: 120px;">
+                                    <i class="fas fa-user fa-4x text-secondary"></i>
+                                </div>
+                            {% endif %}
+                            <input type="file" name="picture" class="form-control mt-2">
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">First Name</label>
+                            <input type="text" name="first_name" value="{{ form.first_name.value }}" class="form-control" required>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Last Name</label>
+                            <input type="text" name="last_name" value="{{ form.last_name.value }}" class="form-control" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" name="email" value="{{ form.email.value }}" class="form-control" required>
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Gender</label>
+                            <select name="gender" class="form-select">
+                                {% for key, val in form.fields.gender.choices %}
+                                    <option value="{{ key }}" {% if profile.gender == key %}selected{% endif %}>{{ val }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Role (read-only) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Role</label>
+                            <input type="text" class="form-control" value="{{ profile.get_role_display }}" disabled>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success fw-semibold shadow-sm">Save Changes</button>
+                            <a href="{% url 'user_profile' %}" class="btn btn-secondary fw-semibold shadow-sm">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        {% include "partials/footer.html" %}
+    </div>
+</div>
+
+{% include "partials/scripts.html" %}
+</body>
+</html>
