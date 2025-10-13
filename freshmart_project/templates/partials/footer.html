@@ -1,12 +1,13 @@
- <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+<footer class="bg-light py-4 mt-auto border-top">
+    <div class="container-fluid px-4">
+        <div class="row align-items-center">
+            <div class="col-md text-center text-md-start mb-2 mb-md-0 text-muted small">
+                &copy; {{ now|date:"Y" }} FreshMart IMS. All rights reserved.
+            </div>
+            <div class="col-md text-center text-md-end">
+                <a href="#" class="text-decoration-none me-3 text-secondary" aria-label="Privacy Policy">Privacy Policy</a>
+                <a href="#" class="text-decoration-none text-secondary" aria-label="Terms and Conditions">Terms &amp; Conditions</a>
+            </div>
+        </div>
+    </div>
+</footer>

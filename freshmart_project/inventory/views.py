@@ -493,6 +493,38 @@ def product_price_data(request):
     
     return JsonResponse(data)
 
+def product_value_data(request):
+    """
+    Returns JSON listing the top 12 products by total inventory value:
+      total_value = quantity_in_stock * price
+    """
+    products = InventoryItem.objects.all()
+
+    # Compute total value and store them temporarily
+    product_values = []
+    for p in products:
+        price = float(p.price or 0)
+        qty = p.quantity_in_stock or 0
+        total = price * qty
+        product_values.append({
+            'name': p.product_name,
+            'total_value': total
+        })
+
+    # Sort products by total value (descending)
+    top_products = sorted(product_values, key=lambda x: x['total_value'], reverse=True)[:12]
+
+    # Extract top 12 labels and values
+    labels = [item['name'] for item in top_products]
+    values = [item['total_value'] for item in top_products]
+
+    return JsonResponse({
+        "labels": labels,
+        "values": values,
+    })
+
+
+
 def get_alerts(request):
     alerts = []
 
