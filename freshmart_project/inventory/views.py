@@ -580,18 +580,30 @@ def get_alerts(request):
 def export_products_csv(request):
     if request.method == "POST":
         selected_categories = request.POST.getlist("categories")
+        custom_filename = request.POST.get("filename", "").strip()  # Get the filename input
 
+        # Use default name if blank
+        if not custom_filename:
+            custom_filename = "products"
+        
+        # Ensure .csv extension
+        if not custom_filename.lower().endswith(".csv"):
+            custom_filename += ".csv"
+
+        # ✅ Set custom filename for download
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="products.csv"'
+        response['Content-Disposition'] = f'attachment; filename="{custom_filename}"'
 
         writer = csv.writer(response)
         writer.writerow(['Product Code', 'Product Name', 'Quantity', 'Price (₱)', 'Category'])
 
+        # ✅ Handle category filtering
         if selected_categories and "all" not in selected_categories:
             items = InventoryItem.objects.filter(category__id__in=selected_categories)
         else:
             items = InventoryItem.objects.all()
 
+        # ✅ Write data to CSV
         for item in items:
             writer.writerow([
                 item.product_code,
@@ -603,6 +615,6 @@ def export_products_csv(request):
 
         return response
 
-    # If GET request → return modal options
+    # If GET request → show modal
     categories = Category.objects.all()
     return render(request, "inventory/export_modal.html", {"categories": categories})

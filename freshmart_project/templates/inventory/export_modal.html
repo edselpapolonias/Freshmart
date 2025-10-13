@@ -1,31 +1,43 @@
 <form method="POST" action="{% url 'export_products' %}">
     {% csrf_token %}
     <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content rounded-4 shadow">
                 <div class="modal-header bg-success text-white rounded-top-4">
                     <h5 class="modal-title fw-bold" id="exportModalLabel">Export to CSV</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="fw-semibold mb-2">Select Categories to Export:</p>
-                    <div class="form-check">
+                    <p class="fw-semibold mb-3">Select Categories to Export:</p>
+
+                    <!-- All Categories Checkbox -->
+                    <div class="form-check mb-3">
                         <input class="form-check-input" type="checkbox" name="categories" value="all" id="allCategories" checked>
                         <label class="form-check-label fw-semibold" for="allCategories">All Categories</label>
                     </div>
-                    <hr>
-                    {% for category in categories %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="categories" value="{{ category.id }}" id="cat{{ category.id }}">
-                            <label class="form-check-label" for="cat{{ category.id }}">{{ category.category_name }}</label>
-                        </div>
-                    {% empty %}
-                        <p class="text-muted fst-italic">No categories available.</p>
-                    {% endfor %}
+
+                    <div class="border rounded-3 p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
+                        {% for category in categories %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input category-checkbox" type="checkbox" name="categories" value="{{ category.id }}" id="cat{{ category.id }}">
+                                <label class="form-check-label" for="cat{{ category.id }}">{{ category.category_name }}</label>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted fst-italic mb-0">No categories available.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- 📝 CSV Filename Input -->
+                    <div class="mt-3">
+                        <label for="filename" class="form-label fw-semibold">File Name:</label>
+                        <input type="text" name="filename" id="filename" class="form-control" placeholder=" " required>
+                        <small class="text-muted fst-italic">Default extension ".csv" will be added automatically.</small>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success fw-semibold">
-                        <i class="bi bi-file-earmark-spreadsheet"></i> Generate CSV
+
+                <div class="modal-footer justify-content-between">
+                    <button type="submit" class="btn btn-success fw-semibold d-flex align-items-center">
+                        <i class="bi bi-file-earmark-spreadsheet me-2 fs-5"></i> Generate CSV
                     </button>
                     <button type="button" class="btn btn-outline-secondary fw-semibold" data-bs-dismiss="modal">Cancel</button>
                 </div>
@@ -33,3 +45,50 @@
         </div>
     </div>
 </form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const allCheckbox = document.getElementById("allCategories");
+    const categoryCheckboxes = document.querySelectorAll(".category-checkbox");
+    const filenameInput = document.getElementById("filename");
+
+    // Handle checkbox logic
+    allCheckbox.addEventListener("change", function() {
+        if (this.checked) {
+            categoryCheckboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = true;
+            });
+        } else {
+            categoryCheckboxes.forEach(cb => cb.disabled = false);
+        }
+    });
+
+    categoryCheckboxes.forEach(cb => {
+        cb.addEventListener("change", function() {
+            if (this.checked) {
+                allCheckbox.checked = false;
+                allCheckbox.dispatchEvent(new Event("change"));
+            }
+            const anyChecked = Array.from(categoryCheckboxes).some(box => box.checked);
+            if (!anyChecked) {
+                allCheckbox.disabled = false;
+            }
+        });
+    });
+
+    // Ensure filename always ends with .csv before submitting
+    const form = filenameInput.closest("form");
+    form.addEventListener("submit", function() {
+        let name = filenameInput.value.trim();
+        if (name && !name.toLowerCase().endsWith(".csv")) {
+            filenameInput.value = name + ".csv";
+        }
+
+        // ✅ Clear the textbox after submission
+        setTimeout(() => {
+            filenameInput.value = "";
+        }, 300);
+    });
+});
+</script>
