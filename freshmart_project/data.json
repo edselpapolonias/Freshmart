@@ -1,0 +1,999 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Jf35T3jLiXRXWkYozCYtMF$oqubkTy6qdZtYsqS7qgHntGDZvLoJiUcG0eT+WmKfWU=",
+    "last_login": "2025-10-14T02:09:39.118Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "edsel@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-10-09T12:29:46.221Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ynfGe4Lx1zfwHtrMprehP1$pSsgzZvf04aFtMydpdR8G6S54a2+T+rt6Ih0DJ8hHEk=",
+    "last_login": "2025-10-13T13:16:48.739Z",
+    "is_superuser": false,
+    "username": "c",
+    "first_name": "Cheryl",
+    "last_name": "Papolonias",
+    "email": "cheryl@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T11:39:10.629Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$1t5o4laaYgVSc6dHzvkWM3$fH/BeZMHiTB+OaPX63ilrCNNI4bSKl6d7/AsgP7p1pE=",
+    "last_login": "2025-10-10T12:57:23.521Z",
+    "is_superuser": false,
+    "username": "j",
+    "first_name": "chaddddd",
+    "last_name": "jug",
+    "email": "edsel.papolonias@spus.edu.ph",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T12:57:16.557Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$dfvGnPVC1vOb5Gtvr5AQLU$l6gFWufQgrzDoE8E3MDiSDn2dUyb7PTLkGfBCYQ9B/g=",
+    "last_login": "2025-10-10T16:26:41.766Z",
+    "is_superuser": false,
+    "username": "ev",
+    "first_name": "Evis",
+    "last_name": "ret",
+    "email": "ev@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T16:26:29.986Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$vc9hvCTcm7RffO6je5Nn4y$7fO7h23QUzFSkobMgPorCMpai2cIQCPRxApVCDBhl/U=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ed",
+    "first_name": "Edis",
+    "last_name": "Lonias",
+    "email": "eds@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T16:39:28.592Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CAoUlqBU9XTVs369sWnMDu$bbXP1eJw8QQ7NWdmJRYROvNddEaZsQ6LilvJY72QdUo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "add",
+    "first_name": "ad",
+    "last_name": "min",
+    "email": "add@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T16:54:15.607Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$KdeEaUddDa46ceDn8LT2um$B+cXGrK6aEr8aV77eufZVmd8k8AyLdpctto+039jkj8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "a",
+    "first_name": "new acc",
+    "last_name": "new acc",
+    "email": "acc@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T17:26:25.009Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$hpQJlqjDSSvX5azJVmWMB8$HmyUcGTNsSXL+dID1k+0SbXRnx793EQeyApXnq6TbZE=",
+    "last_login": "2025-10-10T17:52:03.023Z",
+    "is_superuser": true,
+    "username": "edselpapo",
+    "first_name": "",
+    "last_name": "",
+    "email": "edsel@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-10-10T17:49:51.919Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$TFuXJqYwGG8wtCBOw78mu1$Dl0F00fZKrHWDYDwkGtBQC1wvYw5enaMZnxE0gfh8nc=",
+    "last_login": "2025-10-13T13:16:30.624Z",
+    "is_superuser": false,
+    "username": "e",
+    "first_name": "edsel",
+    "last_name": "edsel",
+    "email": "edsel1@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T18:04:42.035Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$cbKPuyM5ktLJERFty5pEd8$kF737Qn/oNNrz4W2FpxL5bCRGLb23YjoVgngJ5x06sU=",
+    "last_login": "2025-10-17T05:25:17.710Z",
+    "is_superuser": false,
+    "username": "admins",
+    "first_name": "Edsel",
+    "last_name": "Besonia",
+    "email": "edsel.papolonias@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T18:10:29.119Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OWyvurb5DtDLoOvxiaypK0$/st+Y0jo5D2FwyYtwLYUFCKcqYBMky7QHNHVd/6FWIQ=",
+    "last_login": "2025-10-10T18:27:44.761Z",
+    "is_superuser": false,
+    "username": "king",
+    "first_name": "Kiking",
+    "last_name": "Widi",
+    "email": "king@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-10T18:27:37.987Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$L8VNWFlx7aOXOp2prBfnqP$ys6J/UKNO2+LMrCvgpo5bLp8st4KZbWTwZcA6euE3zw=",
+    "last_login": "2025-10-11T04:35:16.064Z",
+    "is_superuser": false,
+    "username": "ar",
+    "first_name": "arh",
+    "last_name": "santos",
+    "email": "santos@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-11T04:17:29.349Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 18,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$GI7CkdfOYwSdLI4FPQEm5Q$gf+VKqd2EvOIq9o8HNx+Qhsu2mnvTy2IVXG7MKUXCJQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "evic",
+    "first_name": "evic",
+    "last_name": "reterte",
+    "email": "evic@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-11T04:42:26.142Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 19,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$uDM2a4CsS86vk7hoAlINvR$sedqdCrHZV4NGPgNFYXZ2NINvhx0tE2Bm5g3W5AIF4w=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jb",
+    "first_name": "John",
+    "last_name": "Bryan",
+    "email": "jb@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-11T04:50:36.979Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 20,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$FauVxTj7qA93vV40db98DA$40ZvftM+T/5BxqSckrWw8oWPlWZgaIfHtgRAyPdxW10=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jo",
+    "first_name": "johlan",
+    "last_name": "canon",
+    "email": "johlan@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-11T07:25:04.217Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 21,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$EzJcSQdL9WUCWkDPiR7xNq$vVuL1LoTGcSgkz3W9o0l9g5NkVe/8dMqEhzT9m4Dhe0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "b",
+    "first_name": "Britt",
+    "last_name": "Madelo",
+    "email": "britt@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-11T13:26:26.891Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 22,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$mebgXZYlqW81xdlDGVlk6H$6CtfLojiUNQocOMKiO2rMPqY/e7lZXTy488UQZmy7LI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "chad",
+    "first_name": "Chad",
+    "last_name": "Juagpao",
+    "email": "stephen.chad@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-13T13:17:56.694Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "lsp5kybnw8ihl17y09lvl19cc5g2bp1f",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGln-kfVS0ucM0dq7IQFkS3FSIe4OkVJA-2bmvdRA2zoNW5NlmFldlLXq9Dsmyg8pO-E7lVvVuZZ1mZPeFX3QpvvK8rwe7t_BRG361iEgmvGMEYUheStd9gmjMQCpCxwAPbhIjlnAJ2syeMIu8hji6Eisen8A6Dc3lA:1v9cxp:uuvo6HjfbJqixhk2nYnUnHqfC6ogdto-HEvh_Ov6Vek",
+    "expire_date": "2025-10-31T05:25:17.718Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "o4zsjq3x2xtjalm70pnk3zz35v8hs304",
+  "fields": {
+    "session_data": "e30:1v7BQe:YEOjUHlbYh2wqf7dX43YruAFgZ2OR6oVQbW8mXa4cKo",
+    "expire_date": "2025-10-24T11:36:56.084Z"
+  }
+},
+{
+  "model": "inventory.category",
+  "pk": 6,
+  "fields": {
+    "category_name": "Dairy",
+    "description": "c"
+  }
+},
+{
+  "model": "inventory.category",
+  "pk": 7,
+  "fields": {
+    "category_name": "Drinks",
+    "description": "Liquid"
+  }
+},
+{
+  "model": "inventory.category",
+  "pk": 8,
+  "fields": {
+    "category_name": "Frozen Foods",
+    "description": "Foods that has preservatives"
+  }
+},
+{
+  "model": "inventory.category",
+  "pk": 10,
+  "fields": {
+    "category_name": "Vegetables",
+    "description": "Veggies"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 1,
+  "fields": {
+    "product_name": "Eden Cheese 200 grams",
+    "product_code": "10001242",
+    "description": "Cheese",
+    "quantity_in_stock": 36,
+    "price": "70.00",
+    "category": 6,
+    "created_at": "2025-10-10T06:59:48.249Z",
+    "updated_at": "2025-10-13T07:25:26.886Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 2,
+  "fields": {
+    "product_name": "Pocari 200 ML",
+    "product_code": "10001852",
+    "description": "Energy Drink",
+    "quantity_in_stock": 25,
+    "price": "20.00",
+    "category": 7,
+    "created_at": "2025-10-10T07:16:43.421Z",
+    "updated_at": "2025-10-13T08:32:29.442Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 3,
+  "fields": {
+    "product_name": "Coke",
+    "product_code": "10001432",
+    "description": "Softdrinks",
+    "quantity_in_stock": 50,
+    "price": "25.00",
+    "category": 7,
+    "created_at": "2025-10-10T07:51:52.058Z",
+    "updated_at": "2025-10-13T13:12:26.702Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 4,
+  "fields": {
+    "product_name": "Butter",
+    "product_code": "10001026",
+    "description": "Almond buttery sauce.",
+    "quantity_in_stock": 0,
+    "price": "22.00",
+    "category": 6,
+    "created_at": "2025-10-10T08:35:14.431Z",
+    "updated_at": "2025-10-13T13:15:23.277Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 5,
+  "fields": {
+    "product_name": "Mountain Dew",
+    "product_code": "6565656",
+    "description": "Softdrinks",
+    "quantity_in_stock": 30,
+    "price": "20.00",
+    "category": 7,
+    "created_at": "2025-10-10T08:40:39.758Z",
+    "updated_at": "2025-10-11T07:08:21.751Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 7,
+  "fields": {
+    "product_name": "Nuggets",
+    "product_code": "164332",
+    "description": "Chicken Nuggets",
+    "quantity_in_stock": 10,
+    "price": "200.00",
+    "category": 8,
+    "created_at": "2025-10-11T13:15:38.551Z",
+    "updated_at": "2025-10-13T06:37:07.166Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 8,
+  "fields": {
+    "product_name": "Cow Fresh Milk",
+    "product_code": "091233",
+    "description": "Fresh From cows",
+    "quantity_in_stock": 0,
+    "price": "150.00",
+    "category": 6,
+    "created_at": "2025-10-12T06:22:05.072Z",
+    "updated_at": "2025-10-12T07:57:24.242Z"
+  }
+},
+{
+  "model": "inventory.inventoryitem",
+  "pk": 10,
+  "fields": {
+    "product_name": "Sprite Mismo",
+    "product_code": "54545",
+    "description": "Softdrinks",
+    "quantity_in_stock": 1,
+    "price": "25.00",
+    "category": 7,
+    "created_at": "2025-10-12T07:57:56.460Z",
+    "updated_at": "2025-10-12T10:54:21.227Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 1,
+  "fields": {
+    "product": 2,
+    "old_quantity": 0,
+    "input_quantity": 100,
+    "new_quantity": 100,
+    "action": "ADD",
+    "date": "2025-10-10T07:16:51.633Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 2,
+  "fields": {
+    "product": 2,
+    "old_quantity": 100,
+    "input_quantity": 25,
+    "new_quantity": 125,
+    "action": "ADD",
+    "date": "2025-10-10T08:40:58.460Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 3,
+  "fields": {
+    "product": 5,
+    "old_quantity": 0,
+    "input_quantity": 50,
+    "new_quantity": 50,
+    "action": "ADD",
+    "date": "2025-10-10T08:43:25.972Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 4,
+  "fields": {
+    "product": 5,
+    "old_quantity": 50,
+    "input_quantity": 20,
+    "new_quantity": 30,
+    "action": "DEDUCT",
+    "date": "2025-10-10T08:43:46.701Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 5,
+  "fields": {
+    "product": 1,
+    "old_quantity": 10,
+    "input_quantity": 11,
+    "new_quantity": 0,
+    "action": "DEDUCT",
+    "date": "2025-10-10T08:44:19.323Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 6,
+  "fields": {
+    "product": 1,
+    "old_quantity": 0,
+    "input_quantity": 35,
+    "new_quantity": 35,
+    "action": "ADD",
+    "date": "2025-10-10T09:07:21.412Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 7,
+  "fields": {
+    "product": 3,
+    "old_quantity": 0,
+    "input_quantity": 5,
+    "new_quantity": 5,
+    "action": "ADD",
+    "date": "2025-10-10T09:22:57.122Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 8,
+  "fields": {
+    "product": 4,
+    "old_quantity": 0,
+    "input_quantity": 1,
+    "new_quantity": 1,
+    "action": "ADD",
+    "date": "2025-10-10T10:17:21.375Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 9,
+  "fields": {
+    "product": 4,
+    "old_quantity": 1,
+    "input_quantity": 1,
+    "new_quantity": 0,
+    "action": "DEDUCT",
+    "date": "2025-10-10T10:18:52.968Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 10,
+  "fields": {
+    "product": 3,
+    "old_quantity": 5,
+    "input_quantity": 5,
+    "new_quantity": 0,
+    "action": "DEDUCT",
+    "date": "2025-10-10T10:25:16.642Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 11,
+  "fields": {
+    "product": 1,
+    "old_quantity": 35,
+    "input_quantity": 1,
+    "new_quantity": 36,
+    "action": "ADD",
+    "date": "2025-10-10T11:39:30.930Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 12,
+  "fields": {
+    "product": 3,
+    "old_quantity": 0,
+    "input_quantity": 1,
+    "new_quantity": 1,
+    "action": "ADD",
+    "date": "2025-10-10T13:37:05.263Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 13,
+  "fields": {
+    "product": 2,
+    "old_quantity": 125,
+    "input_quantity": 50,
+    "new_quantity": 75,
+    "action": "DEDUCT",
+    "date": "2025-10-11T08:35:12.289Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 15,
+  "fields": {
+    "product": 7,
+    "old_quantity": 0,
+    "input_quantity": 50,
+    "new_quantity": 50,
+    "action": "ADD",
+    "date": "2025-10-11T13:17:26.450Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 16,
+  "fields": {
+    "product": 8,
+    "old_quantity": 0,
+    "input_quantity": 5,
+    "new_quantity": 5,
+    "action": "ADD",
+    "date": "2025-10-12T06:22:27.917Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 17,
+  "fields": {
+    "product": 8,
+    "old_quantity": 5,
+    "input_quantity": 5,
+    "new_quantity": 0,
+    "action": "DEDUCT",
+    "date": "2025-10-12T07:57:24.249Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 18,
+  "fields": {
+    "product": 10,
+    "old_quantity": 0,
+    "input_quantity": 500,
+    "new_quantity": 500,
+    "action": "ADD",
+    "date": "2025-10-12T10:53:32.481Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 19,
+  "fields": {
+    "product": 10,
+    "old_quantity": 500,
+    "input_quantity": 499,
+    "new_quantity": 1,
+    "action": "DEDUCT",
+    "date": "2025-10-12T10:54:21.241Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 20,
+  "fields": {
+    "product": 3,
+    "old_quantity": 1,
+    "input_quantity": 49,
+    "new_quantity": 50,
+    "action": "ADD",
+    "date": "2025-10-13T06:33:56.559Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 21,
+  "fields": {
+    "product": 7,
+    "old_quantity": 50,
+    "input_quantity": 40,
+    "new_quantity": 10,
+    "action": "DEDUCT",
+    "date": "2025-10-13T06:37:07.177Z"
+  }
+},
+{
+  "model": "inventory.stockhistory",
+  "pk": 22,
+  "fields": {
+    "product": 2,
+    "old_quantity": 75,
+    "input_quantity": 50,
+    "new_quantity": 25,
+    "action": "DEDUCT",
+    "date": "2025-10-13T08:32:29.450Z"
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 2,
+  "fields": {
+    "user": 3,
+    "gender": "F",
+    "picture": "profile_pics/Screenshot_2025-08-08_135750.png",
+    "role": "Regular",
+    "is_verified": false,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 3,
+  "fields": {
+    "user": 4,
+    "gender": "M",
+    "picture": "",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 4,
+  "fields": {
+    "user": 5,
+    "gender": "F",
+    "picture": "profile_pics/Screenshot_2025-08-08_135750_93wPnY7.png",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 5,
+  "fields": {
+    "user": 6,
+    "gender": "M",
+    "picture": "profile_pics/Screenshot_2025-08-08_154022.png",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 6,
+  "fields": {
+    "user": 7,
+    "gender": "F",
+    "picture": "",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 7,
+  "fields": {
+    "user": 8,
+    "gender": "M",
+    "picture": "profile_pics/Screenshot_2025-08-08_135750_uda9ANH.png",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 8,
+  "fields": {
+    "user": 10,
+    "gender": "M",
+    "picture": "",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 9,
+  "fields": {
+    "user": 11,
+    "gender": "M",
+    "picture": "profile_pics/oscar.jpg",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 11,
+  "fields": {
+    "user": 13,
+    "gender": "M",
+    "picture": "",
+    "role": "Regular",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 12,
+  "fields": {
+    "user": 17,
+    "gender": "M",
+    "picture": "",
+    "role": "Admin",
+    "is_verified": true,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 13,
+  "fields": {
+    "user": 18,
+    "gender": "M",
+    "picture": "profile_pics/Screenshot_2025-08-08_160403_wVOL8yA.png",
+    "role": "Admin",
+    "is_verified": false,
+    "is_declined": true
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 14,
+  "fields": {
+    "user": 19,
+    "gender": "M",
+    "picture": "profile_pics/Screenshot_2025-08-08_160355_dOBucnN.png",
+    "role": "Admin",
+    "is_verified": false,
+    "is_declined": true
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 15,
+  "fields": {
+    "user": 20,
+    "gender": "M",
+    "picture": "profile_pics/Screenshot_2025-08-08_160355_fCGVkpl.png",
+    "role": "Admin",
+    "is_verified": false,
+    "is_declined": true
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 16,
+  "fields": {
+    "user": 21,
+    "gender": "M",
+    "picture": "",
+    "role": "Admin",
+    "is_verified": false,
+    "is_declined": false
+  }
+},
+{
+  "model": "inventory.userprofile",
+  "pk": 17,
+  "fields": {
+    "user": 22,
+    "gender": "M",
+    "picture": "profile_pics/oscar_Ul2jx3L.jpg",
+    "role": "Admin",
+    "is_verified": false,
+    "is_declined": true
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 1,
+  "fields": {
+    "product": 2,
+    "action": "Updated",
+    "description": "You updated the product 'Pocari 200 ML'.",
+    "date": "2025-10-12T07:56:26.697Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 3,
+  "fields": {
+    "product": 10,
+    "action": "Added",
+    "description": "You added a new product 'Sprite Mismo'.",
+    "date": "2025-10-12T07:57:56.467Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 4,
+  "fields": {
+    "product": 1,
+    "action": "Updated",
+    "description": "You updated the product 'Eden Cheese 200 grams'.",
+    "date": "2025-10-12T07:58:13.751Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 5,
+  "fields": {
+    "product": null,
+    "action": "Deleted",
+    "description": "You deleted the product 'Cheesy Chickendog'.",
+    "date": "2025-10-12T11:37:10.718Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 6,
+  "fields": {
+    "product": 1,
+    "action": "Updated",
+    "description": "You updated the product 'Eden Cheese 200 grams'.",
+    "date": "2025-10-13T07:25:26.891Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 7,
+  "fields": {
+    "product": 2,
+    "action": "Updated",
+    "description": "You updated the product 'Pocari 200 ML'.",
+    "date": "2025-10-13T07:26:21.210Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 8,
+  "fields": {
+    "product": 3,
+    "action": "Updated",
+    "description": "You updated the product 'Coke'.",
+    "date": "2025-10-13T13:12:26.712Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 9,
+  "fields": {
+    "product": 4,
+    "action": "Updated",
+    "description": "You updated the product 'Butter'.",
+    "date": "2025-10-13T13:15:11.943Z",
+    "user": 11
+  }
+},
+{
+  "model": "inventory.producthistory",
+  "pk": 10,
+  "fields": {
+    "product": 4,
+    "action": "Updated",
+    "description": "You updated the product 'Butter'.",
+    "date": "2025-10-13T13:15:23.287Z",
+    "user": 11
+  }
+}
+]
