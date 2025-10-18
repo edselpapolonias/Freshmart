@@ -10,7 +10,7 @@ class Category(models.Model):
 
 class InventoryItem(models.Model):
     product_name = models.CharField(max_length=100)
-    product_code = models.CharField(max_length=50)
+    product_code = models.CharField(max_length=6, unique=True)
     description = models.TextField(blank=True)
     quantity_in_stock = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)

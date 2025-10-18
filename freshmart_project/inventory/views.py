@@ -82,6 +82,10 @@ def admin_required(view_func):
 
 @login_required
 def product_manage(request, pk=None):
+    from .forms import InventoryItemForm
+    from .models import InventoryItem, ProductHistory, Category
+
+    # Check if editing or adding
     if pk:
         item = get_object_or_404(InventoryItem, id=pk)
         edit_mode = True
@@ -93,42 +97,46 @@ def product_manage(request, pk=None):
         if "delete" in request.POST:
             # 🗑 Save history BEFORE deleting product
             ProductHistory.objects.create(
-                product=item,  # Safe because ProductHistory.product uses SET_NULL
+                product=item,
                 action="Deleted",
                 description=f"You deleted the product '{item.product_name}'.",
                 user=request.user,
             )
-            # Delete the product
             item.delete()
             messages.success(request, "Product deleted successfully.")
             return redirect("product_manage")
         else:
-            # 📝 Add or Update Product
-            from .forms import InventoryItemForm
             form = InventoryItemForm(request.POST, instance=item)
             if form.is_valid():
-                product = form.save(commit=False)
-                product.save()
+                product_code = form.cleaned_data["product_code"]
 
-                if edit_mode:
-                    ProductHistory.objects.create(
-                        product=product,
-                        action="Updated",
-                        description=f"You updated the product '{product.product_name}'.",
-                        user=request.user,
-                    )
-                    messages.success(request, "Product updated successfully.")
+                # ✅ Check for duplicate product code (only when adding new)
+                if not edit_mode and InventoryItem.objects.filter(product_code=product_code).exists():
+                    messages.error(request, f"Product code '{product_code}' already exists. Please use another code.")
                 else:
-                    ProductHistory.objects.create(
-                        product=product,
-                        action="Added",
-                        description=f"You added a new product '{product.product_name}'.",
-                        user=request.user,
-                    )
-                    messages.success(request, "Product added successfully.")
-                return redirect("product_manage")
+                    # Save normally
+                    product = form.save(commit=False)
+                    product.save()
+
+                    if edit_mode:
+                        ProductHistory.objects.create(
+                            product=product,
+                            action="Updated",
+                            description=f"You updated the product '{product.product_name}'.",
+                            user=request.user,
+                        )
+                        messages.success(request, "Product updated successfully.")
+                    else:
+                        ProductHistory.objects.create(
+                            product=product,
+                            action="Added",
+                            description=f"You added a new product '{product.product_name}'.",
+                            user=request.user,
+                        )
+                        messages.success(request, "Product added successfully.")
+
+                    return redirect("product_manage")
     else:
-        from .forms import InventoryItemForm
         form = InventoryItemForm(instance=item)
 
     # 🔍 Search filter
@@ -140,7 +148,6 @@ def product_manage(request, pk=None):
     # 🧾 Get Product History (latest first)
     history = ProductHistory.objects.order_by("-date")
 
-    from .models import Category
     categories = Category.objects.all()
 
     return render(request, "inventory/manage_product.html", {
@@ -190,24 +197,21 @@ def category_edit(request, pk):
     })
 
 def category_delete(request, pk):
+    from .models import Category, InventoryItem
     category = get_object_or_404(Category, pk=pk)
 
-    related_products_count = category.inventoryitem_set.count() # Use the reverse relationship manager
-    
-    if related_products_count > 0:
-        # If products are found, prevent deletion and show an error message
-        messages.error(request, f"Cannot delete category '{category.category_name}'. It is linked to {related_products_count} product(s). Please move or delete the linked products first.")
-        # Redirect back to the list page
-        return redirect('category_list_add') 
-    
-    # If no related products exist, proceed with deletion
-    try:
+    # Check if category has linked products
+    linked_products = InventoryItem.objects.filter(category=category)
+
+    if linked_products.exists():
+        messages.error(
+            request,
+            f"Cannot delete category '{category.category_name}' because it is linked to existing products."
+        )
+    else:
         category.delete()
-        messages.success(request, f"Category '{category.category_name}' successfully deleted.")
-    except Exception as e:
-        # Catch any unexpected database errors during deletion
-        messages.error(request, f"An unexpected error occurred during deletion: {e}")
-        
+        messages.success(request, f"Category '{category.category_name}' deleted successfully.")
+
     return redirect('category_list_add')
 
 def product_detail(request, pk):
