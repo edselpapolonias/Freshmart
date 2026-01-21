@@ -38,6 +38,9 @@ urlpatterns = [
 
     path('profile/', views.user_profile, name='user_profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('verify-email/', views.verify_email, name='verify_email'),
+
+
 ]
 
 

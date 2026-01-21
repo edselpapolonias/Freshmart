@@ -159,7 +159,7 @@
     <p>Login to access your inventory management system</p>
   </div>
 
-  <form method="post" novalidate>
+  <form method="post" novalidate id="login-form">
     {% csrf_token %}
     {{ form.non_field_errors }}
 
@@ -175,11 +175,43 @@
       {{ form.password.errors }}
     </div>
 
-    <button type="submit" class="btn-login">Login</button>
+    <button type="submit" class="btn-login" id="login-btn">Login</button>
+
+    {% if remaining_lock_seconds > 0 %}
+    <p style="color:red; margin-top:10px;">
+        You are temporarily locked out. Try again in <span id="timer"></span>.
+    </p>
+    {% endif %}
   </form>
 
   <div class="text-center">
     <p>Don’t have an account? <a href="{% url 'registration' %}" class="text-link">Create one here</a></p>
   </div>
 </div>
+
+{% if remaining_lock_seconds > 0 %}
+<script>
+let remaining = {{ remaining_lock_seconds }};
+const loginBtn = document.getElementById('login-btn');
+loginBtn.disabled = true;
+
+const timerSpan = document.getElementById('timer');
+
+function updateTimer() {
+    let minutes = Math.floor(remaining / 60);
+    let seconds = remaining % 60;
+    timerSpan.textContent = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+    if (remaining <= 0) {
+        loginBtn.disabled = false;
+        timerSpan.textContent = "0:00";
+    } else {
+        remaining--;
+        setTimeout(updateTimer, 1000);
+    }
+}
+
+updateTimer();
+</script>
+{% endif %}
+
 {% endblock %}

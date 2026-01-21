@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+import random
+from datetime import timedelta
+from django.utils import timezone
 
 class Category(models.Model):
     category_name = models.CharField(max_length=100)
@@ -54,6 +57,9 @@ class UserProfile(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Regular')
     is_verified = models.BooleanField(default=False) 
     is_declined = models.BooleanField(default=False)
+    
+    failed_login_attempts = models.IntegerField(default=0)
+    lock_until = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -72,3 +78,18 @@ class ProductHistory(models.Model):
 
     def __str__(self):
         return f"{self.action} - {self.product.product_name if self.product else 'Unknown'}"
+    
+class EmailOTP(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def is_expired(self):
+        # OTP valid for 10 minutes
+        return timezone.now() > self.created_at + timedelta(minutes=10)
+
+    def generate_otp(self):
+        self.otp_code = f"{random.randint(100000, 999999)}"
+        self.created_at = timezone.now()
+        self.save()

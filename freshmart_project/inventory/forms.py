@@ -36,18 +36,14 @@ class StockForm(forms.Form):
     )
 
 class UserRegistrationForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-    email = forms.EmailField()
-    username = forms.CharField(max_length=30)
-    password = forms.CharField(widget=forms.PasswordInput)
-    gender = forms.ChoiceField(choices=UserProfile.GENDER_CHOICES)
-    role = forms.ChoiceField(choices=UserProfile.ROLE_CHOICES)
-    picture = forms.ImageField(required=False)
+    password = forms.CharField(widget=forms.PasswordInput, label="Password")
+    gender = forms.ChoiceField(choices=UserProfile.GENDER_CHOICES, label="Gender")
+    role = forms.ChoiceField(choices=UserProfile.ROLE_CHOICES, label="Role")
+    picture = forms.ImageField(required=False, label="Profile Picture")
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'username', 'password']
+        fields = ['first_name', 'last_name', 'email', 'username', 'password', 'gender', 'role', 'picture']
 
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
@@ -65,3 +61,11 @@ class UserProfileForm(forms.ModelForm):
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
             self.fields['email'].initial = user.email
+
+class OTPForm(forms.Form):
+    otp = forms.CharField(
+        max_length=6, 
+        label="Enter OTP", 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter 6-digit code'})
+    )
+

@@ -29,6 +29,11 @@ from django.http import HttpResponse
 from django import forms
 from .forms import UserProfileForm
 from django.contrib import messages
+from django.core.mail import send_mail
+from .models import EmailOTP
+from .forms import OTPForm
+from django.utils import timezone
+from datetime import timedelta
 
 
 def unverified_admin_or_superuser_required(view_func):
@@ -320,37 +325,47 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
+            # Create user but inactive until email verification
             user = form.save(commit=False)
-            password = form.cleaned_data.get('password')
+            password = form.cleaned_data['password']
             user.set_password(password)
-
-            role = form.cleaned_data.get('role')
-
-            if role == 'Admin':
-                user.is_active = True  # Allow login but redirect will handle waiting/declined
-            else:
-                user.is_active = True
-
+            user.is_active = False
             user.save()
 
+            # Create profile
             profile = UserProfile(
                 user=user,
-                gender=form.cleaned_data.get('gender'),
-                role=role,
+                gender=form.cleaned_data['gender'],
+                role=form.cleaned_data['role'],
                 picture=form.cleaned_data.get('picture'),
-                is_verified=(role != 'Admin'),
+                is_verified=False,
                 is_declined=False
             )
             profile.save()
 
-            if role == 'Admin':
-                messages.info(request, 'Your admin account is pending verification by the system administrator.')
-                return redirect('waiting_verification')
-            else:
-                messages.success(request, 'Account created successfully! You can now log in.')
-                return redirect('login')
+            # Create OTP
+            otp_record = EmailOTP(user=user)
+            otp_record.generate_otp()
+
+            # Send OTP email (console backend for testing)
+            send_mail(
+                'Your OTP Verification Code',
+                f'Hello {user.username}, your OTP is {otp_record.otp_code}',
+                'no-reply@freshmart.com',
+                [user.email],
+                fail_silently=False
+            )
+
+            # Save user id in session for OTP verification
+            request.session['verify_user_id'] = user.id
+            messages.success(request, "Account created! Please check your email for the OTP.")
+            return redirect('verify_email')
+        else:
+            # Print form errors to console for debugging
+            print(form.errors)
     else:
         form = UserRegistrationForm()
+
     return render(request, 'registration/register.html', {'form': form})
 
 
@@ -430,27 +445,59 @@ def declined_verification(request):
     return render(request, 'declined_verification.html')
 
 def custom_login(request):
+    remaining_lock_seconds = 0  # Default: no lock
+
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user:
-                profile = getattr(user, 'userprofile', None)
-                if profile and profile.role == 'Admin':
-                    if not profile.is_verified and not profile.is_declined:
-                        return redirect('waiting_verification')
-                    elif not profile.is_verified and profile.is_declined:
-                        return redirect('declined_verification')
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-                login(request, user)
-                return redirect('index')  # dashboard/home
+        # Try to get user and profile
+        try:
+            user = User.objects.get(username=username)
+            profile = user.userprofile
+        except (User.DoesNotExist, UserProfile.DoesNotExist):
+            user = None
+            profile = None
+
+        # Check cooldown
+        if profile and profile.lock_until and profile.lock_until > timezone.now():
+            remaining_lock_seconds = int((profile.lock_until - timezone.now()).total_seconds())
+            messages.error(
+                request,
+                f"Account locked. Try again in {remaining_lock_seconds // 60} minute(s)."
+            )
         else:
-            messages.error(request, "Invalid username or password.")
+            # Normal authentication
+            if form.is_valid():
+                user = authenticate(username=username, password=password)
+                if user:
+                    # Reset counters
+                    if profile:
+                        profile.failed_login_attempts = 0
+                        profile.lock_until = None
+                        profile.save()
+
+                    login(request, user)
+                    return redirect('index')
+
+            # FAILED LOGIN
+            if profile:
+                profile.failed_login_attempts += 1
+                if profile.failed_login_attempts % 5 == 0:
+                    lock_minutes = 5 * (2 ** ((profile.failed_login_attempts // 5) - 1))
+                    profile.lock_until = timezone.now() + timedelta(minutes=lock_minutes)
+                    remaining_lock_seconds = int(lock_minutes * 60)
+                profile.save()
+                messages.error(request, "Invalid username or password.")
+
     else:
         form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+
+    return render(request, "login.html", {
+        "form": form,
+        "remaining_lock_seconds": remaining_lock_seconds
+    })
 
 def category_quantity_data(request):
     """
@@ -698,3 +745,27 @@ def export_stock_csv(request):
 
     return response
 
+def verify_email(request):
+    user_id = request.session.get('verify_user_id')
+    if not user_id:
+        return redirect('registration')  # no session, go back to register
+
+    otp_record = get_object_or_404(EmailOTP, user_id=user_id)
+
+    if request.method == 'POST':
+        form = OTPForm(request.POST)
+        if form.is_valid():
+            otp_input = form.cleaned_data['otp']
+            if otp_record.otp_code == otp_input:
+                user = otp_record.user
+                user.is_active = True
+                user.save()
+                otp_record.delete()  # remove OTP record
+                messages.success(request, "Email verified successfully!")
+                return redirect('login')
+            else:
+                form.add_error('otp', 'Invalid OTP')
+    else:
+        form = OTPForm()
+
+    return render(request, 'verify_email.html', {'form': form})
